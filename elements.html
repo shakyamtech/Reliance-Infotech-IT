@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="Reliance Infotech UI Elements — buttons, forms, accordions, tabs, alerts, cards and more.">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>UI Elements — Reliance Infotech</title>
+    <link rel="icon" type="image/x-icon" href="img/core-img/favicon.ico">
+    <link rel="apple-touch-icon" href="img/core-img/favicon.png">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/custom-override.css">
+</head>
+<body>
+    <div class="preloader d-flex align-items-center justify-content-center">
+        <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+    </div>
+    <header class="ve-header" id="ve-sticky">
+        <div class="container-fluid ve-nav-wrap">
+            <div class="ve-logo"><a href="index.html"><img src="img/core-img/logo.jpg" alt="Reliance Infotech Logo"></a></div>
+            <nav class="ve-nav"><ul>
+                <li><a href="index.html">Home</a></li>
+                <li class="has-drop"><a href="about.html" class="active">About <i class="fa fa-angle-down"></i></a>
+                    <ul class="ve-dropdown">
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="services.html">Our Services</a></li>
+                        <li><a href="elements.html">UI Elements</a></li>
+                    </ul>
+                </li>
+                <li><a href="services.html">Services</a></li>
+                <li class="has-drop"><a href="services.html">Solutions <i class="fa fa-angle-down"></i></a>
+                    <ul class="ve-dropdown">
+                        <li><a href="services.html">Network Infrastructure</a></li>
+                        <li><a href="services.html">Hardware &amp; IT Supplies</a></li>
+                        <li><a href="services.html">CCTV &amp; Surveillance</a></li>
+                        <li><a href="services.html">AMC &amp; IT Support</a></li>
+                    </ul>
+                </li>
+                <li><a href="post.html">Insights</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul></nav>
+            <div class="ve-nav-cta"><a href="contact.html" class="ve-cta-btn">Get a Quote <i class="fa fa-arrow-right"></i></a></div>
+            <button class="ve-toggler" id="ve-toggle"><span></span><span></span><span></span></button>
+        </div>
+        <div class="ve-mobile-menu" id="ve-mobile-menu"><ul>
+            <li><a href="index.html">Home</a></li><li><a href="about.html">About</a></li>
+            <li><a href="services.html">Services</a></li><li><a href="services.html">Solutions</a></li>
+            <li><a href="post.html">Insights</a></li><li><a href="contact.html">Contact</a></li>
+        </ul></div>
+    </header>
+    <section class="ve-page-hero" style="background-image:url(img/bg-img/13.jpg);">
+        <div class="ve-page-hero-overlay"></div>
+        <div class="container ve-page-hero-content">
+            <span class="ve-section-tag">Design System</span><h1>UI <span>Elements &amp; Components</span></h1>
+            <nav aria-label="breadcrumb"><ol class="ve-breadcrumb"><li><a href="index.html">Home</a></li><li class="active">UI Elements</li></ol></nav>
+        </div>
+    </section>
+
+    <section class="ve-section ve-elements-section">
+        <div class="container">
+
+            <!-- BUTTONS -->
+            <div class="ve-el-block">
+                <h3 class="ve-el-title"><span>01</span> Buttons</h3>
+                <div class="ve-el-demo">
+                    <a href="contact.html" class="ve-btn-primary">Primary Button</a>
+                    <a href="services.html" class="ve-btn-ghost">Ghost Button</a>
+                    <a href="about.html" class="ve-btn-white" style="background:var(--ve-dark);color:#fff;">Dark Button</a>
+                    <a href="services.html" class="ve-btn-primary" style="background:transparent;border:2px solid var(--ve-gold);color:var(--ve-gold);">Outline Gold</a>
+                    <a href="contact.html" class="ve-cta-btn">CTA Button <i class="fa fa-arrow-right"></i></a>
+                </div>
+            </div>
+
+            <!-- SERVICE CARDS -->
+            <div class="ve-el-block">
+                <h3 class="ve-el-title"><span>02</span> Service Cards</h3>
+                <div class="ve-services-grid">
+                    <div class="ve-service-card"><div class="ve-service-icon"><i class="fa fa-sitemap"></i></div><h4>Network Setup</h4><p>Structured Cat6 cabling, server rack setup, and managed Wi-Fi access points.</p><a href="services.html" class="ve-card-link">Learn more <i class="fa fa-long-arrow-right"></i></a></div>
+                    <div class="ve-service-card"><div class="ve-service-icon"><i class="fa fa-laptop"></i></div><h4>Hardware Supplies</h4><p>Bulk laptops, custom desktop towers, printers, and genuine IT accessories.</p><a href="services.html" class="ve-card-link">Learn more <i class="fa fa-long-arrow-right"></i></a></div>
+                    <div class="ve-service-card"><div class="ve-service-icon"><i class="fa fa-wrench"></i></div><h4>AMC &amp; IT Maintenance</h4><p>Proactive thermal servicing, on-call hardware repair, and system health checks.</p><a href="services.html" class="ve-card-link">Learn more <i class="fa fa-long-arrow-right"></i></a></div>
+                </div>
+            </div>
+
+            <!-- ACCORDION + FAQ -->
+            <div class="ve-el-block">
+                <h3 class="ve-el-title"><span>03</span> Accordion / FAQ</h3>
+                <div class="row">
+                    <div class="col-12 col-lg-6">
+                        <div class="ve-faq-list">
+                            <div class="ve-faq-item open"><div class="ve-faq-q"><span>How do I get an IT infrastructure quote?</span><i class="fa fa-plus"></i></div><div class="ve-faq-a">Simply submit your requirements through our contact page or call us directly. Our engineers will arrange a free on-site survey.</div></div>
+                            <div class="ve-faq-item"><div class="ve-faq-q"><span>What products do you supply?</span><i class="fa fa-plus"></i></div><div class="ve-faq-a">We supply business laptops, desktops, servers, printers, Cat6 network cables, Cisco/Mikrotik routers, and CCTV systems.</div></div>
+                            <div class="ve-faq-item"><div class="ve-faq-q"><span>Are all hardware parts covered by warranty?</span><i class="fa fa-plus"></i></div><div class="ve-faq-a">Yes, all products carry official OEM manufacturer warranties with local service center backing.</div></div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-6">
+                        <div class="ve-faq-list">
+                            <div class="ve-faq-item"><div class="ve-faq-q"><span>Do you offer emergency on-site AMC support?</span><i class="fa fa-plus"></i></div><div class="ve-faq-a">Yes. AMC contract clients receive rapid on-site technician dispatch within 2-4 hours inside Kathmandu Valley.</div></div>
+                            <div class="ve-faq-item"><div class="ve-faq-q"><span>Can you set up multi-branch VPN connections?</span><i class="fa fa-plus"></i></div><div class="ve-faq-a">Yes, we regularly configure secure IPsec and WireGuard site-to-site VPN tunnels for multi-office organizations.</div></div>
+                            <div class="ve-faq-item"><div class="ve-faq-q"><span>Do you accept Annual Maintenance Contracts for existing setups?</span><i class="fa fa-plus"></i></div><div class="ve-faq-a">Yes. We conduct an initial health audit of your existing hardware and networks before onboarding onto our AMC tier.</div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TESTIMONIAL CARDS -->
+            <div class="ve-el-block">
+                <h3 class="ve-el-title"><span>04</span> Testimonial Cards</h3>
+                <div class="ve-testi-grid">
+                    <div class="ve-testi-card"><div class="ve-testi-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p>"Reliance Infotech transformed our office networking. Fast Wi-Fi throughout all 4 floors and zero downtime."</p><div class="ve-testi-author"><div class="ve-testi-avatar bg-img" style="background-image:url(img/bg-img/client-ramesh.jpg);"></div><div><strong>Ramesh Shrestha</strong><span>Operations Manager</span></div></div></div>
+                    <div class="ve-testi-card"><div class="ve-testi-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p>"Procured 40+ laptops and server units for our new branch. Best pricing and prompt delivery."</p><div class="ve-testi-author"><div class="ve-testi-avatar bg-img" style="background-image:url(img/bg-img/client-suman.jpg);"></div><div><strong>Dr. Suman Maharjan</strong><span>IT Director</span></div></div></div>
+                    <div class="ve-testi-card"><div class="ve-testi-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p>"Their AMC support gives our team peace of mind. Whenever an issue arises, their tech team is on-site fast."</p><div class="ve-testi-author"><div class="ve-testi-avatar bg-img" style="background-image:url(img/bg-img/client-pooja.jpg);"></div><div><strong>Pooja Joshi</strong><span>Facility Head</span></div></div></div>
+                </div>
+            </div>
+
+            <!-- COUNTERS -->
+            <div class="ve-el-block">
+                <h3 class="ve-el-title"><span>05</span> Counter Stats</h3>
+                <section class="ve-counter-section" style="border-radius:var(--ve-radius);overflow:hidden;">
+                    <div class="container"><div class="ve-counter-grid">
+                        <div class="ve-counter-item"><i class="fa fa-building-o"></i><strong class="counter" data-count="500">0</strong><span>+</span><p>Corporate Clients</p></div>
+                        <div class="ve-counter-item"><i class="fa fa-laptop"></i><strong class="counter" data-count="12000">0</strong><span>+</span><p>Hardware Units Delivered</p></div>
+                        <div class="ve-counter-item"><i class="fa fa-sitemap"></i><strong class="counter" data-count="350">0</strong><span>+</span><p>Networks Deployed</p></div>
+                        <div class="ve-counter-item"><i class="fa fa-headphones"></i><strong class="counter" data-count="99">0</strong><span>%</span><p>Issue Resolution Rate</p></div>
+                    </div></div>
+                </section>
+            </div>
+
+            <!-- CONTACT FORM -->
+            <div class="ve-el-block">
+                <h3 class="ve-el-title"><span>06</span> Contact / Quote Form</h3>
+                <div class="ve-contact-form-wrap" style="max-width:700px;">
+                    <form class="ve-contact-form" action="#" method="post">
+                        <div class="ve-form-row">
+                            <div class="ve-form-group"><label>Full Name</label><input type="text" placeholder="Your full name"></div>
+                            <div class="ve-form-group"><label>Email Address</label><input type="email" placeholder="Your email"></div>
+                        </div>
+                        <div class="ve-form-row">
+                            <div class="ve-form-group"><label>Phone Number</label><input type="tel" placeholder="Your phone"></div>
+                            <div class="ve-form-group"><label>Service</label><select><option>Network Infrastructure</option><option>Hardware Procurement</option><option>CCTV Surveillance</option><option>AMC Support</option></select></div>
+                        </div>
+                        <div class="ve-form-group"><label>Message</label><textarea rows="4" placeholder="Describe your IT requirements..."></textarea></div>
+                        <button type="submit" class="ve-btn-primary">Send Message <i class="fa fa-paper-plane"></i></button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- NEWSLETTER -->
+            <div class="ve-el-block">
+                <h3 class="ve-el-title"><span>07</span> Newsletter Banner</h3>
+                <section class="ve-newsletter-section" style="border-radius:var(--ve-radius);overflow:hidden;"><div class="container"><div class="ve-newsletter-wrap">
+                    <div class="ve-nl-left"><i class="fa fa-envelope-o"></i><div><h3>Subscribe to Tech Updates</h3><p>Weekly hardware price lists &amp; tips straight to your inbox.</p></div></div>
+                    <div class="ve-nl-right"><form class="ve-nl-form" action="#" method="post"><input type="email" placeholder="Enter your email address" required><button type="submit">Subscribe</button></form></div>
+                </div></div></section>
+            </div>
+
+            <!-- PROCESS STEPS -->
+            <div class="ve-el-block">
+                <h3 class="ve-el-title"><span>08</span> Process Steps</h3>
+                <div class="ve-process-grid">
+                    <div class="ve-process-step"><div class="ve-process-num">01</div><h5>Site Assessment</h5><p>On-site inspection of network load and hardware requirements.</p></div>
+                    <div class="ve-process-arrow"><i class="fa fa-long-arrow-right"></i></div>
+                    <div class="ve-process-step"><div class="ve-process-num">02</div><h5>Solution Design</h5><p>Custom hardware estimate and network architecture map.</p></div>
+                    <div class="ve-process-arrow"><i class="fa fa-long-arrow-right"></i></div>
+                    <div class="ve-process-step"><div class="ve-process-num">03</div><h5>Deployment</h5><p>Professional installation, cable dressing, and testing.</p></div>
+                    <div class="ve-process-arrow"><i class="fa fa-long-arrow-right"></i></div>
+                    <div class="ve-process-step"><div class="ve-process-num">04</div><h5>AMC Support</h5><p>Continuous maintenance and rapid technician dispatch.</p></div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+    <footer class="ve-footer"><div class="container"><div class="row">
+        <div class="col-12 col-sm-6 col-lg-4 mb-50"><div class="ve-footer-brand">
+            <a href="index.html" class="ve-footer-logo"><img src="img/core-img/logo.jpg" alt="Reliance Infotech Logo"></a>
+            <p>Your trusted partner for enterprise IT infrastructure, technology supplies, CCTV security, and reliable maintenance support.</p>
+            <div class="ve-social">
+                            <a href="https://www.facebook.com/relianceit.np/" target="_blank" rel="noopener noreferrer" title="Facebook"><i class="fa fa-facebook"></i></a>
+                            <a href="https://wa.me/9779851185782" target="_blank" rel="noopener noreferrer" title="WhatsApp"><i class="fa fa-whatsapp"></i></a>
+                            <a href="https://github.com/shakyamtech" target="_blank" rel="noopener noreferrer" title="GitHub"><i class="fa fa-github"></i></a>
+                            <a href="mailto:info@relianceit.com.np" title="Email"><i class="fa fa-envelope"></i></a>
+                        </div>
+        </div></div>
+        <div class="col-12 col-sm-6 col-lg-2 mb-50"><h5 class="ve-footer-title">Quick Links</h5>
+            <ul class="ve-footer-links"><li><a href="index.html">Home</a></li><li><a href="about.html">About Us</a></li><li><a href="services.html">Services</a></li><li><a href="post.html">Insights</a></li><li><a href="contact.html">Contact</a></li></ul>
+        </div>
+        <div class="col-12 col-sm-6 col-lg-3 mb-50"><h5 class="ve-footer-title">Our Services</h5>
+            <ul class="ve-footer-links">
+                <li><a href="services.html">Network Infrastructure</a></li>
+                <li><a href="services.html">Hardware Supplies</a></li>
+                <li><a href="services.html">CCTV &amp; Surveillance</a></li>
+                <li><a href="services.html">AMC &amp; Support</a></li>
+                <li><a href="services.html">Software &amp; Web</a></li>
+            </ul>
+        </div>
+        <div class="col-12 col-sm-6 col-lg-3 mb-50"><h5 class="ve-footer-title">Get In Touch</h5>
+            <ul class="ve-footer-contact"><li><i class="fa fa-map-marker"></i> Putalisadak, Kathmandu, Nepal (Opposite Star Mall)</li><li><i class="fa fa-phone"></i> 01-5367867 / +977-9851185782</li><li><i class="fa fa-envelope"></i> info@relianceit.com.np</li><li><i class="fa fa-clock-o"></i> Sun–Fri, 9:30am – 6:00pm</li></ul>
+        </div>
+    </div></div>
+    <div class="ve-footer-bottom"><div class="container"><div class="ve-footer-bottom-inner">
+        <p>Copyright &copy; <script>document.write(new Date().getFullYear());</script> Reliance Infotech. All Rights Reserved.</p>
+        <ul><li><a href="#">Privacy Policy</a></li><li><a href="#">Terms of Service</a></li><li><a href="#">Support Policy</a></li></ul>
+    </div></div></div></footer>
+    <script src="js/jquery/jquery-2.2.4.min.js"></script>
+    <script src="js/bootstrap/popper.min.js"></script>
+    <script src="js/bootstrap/bootstrap.min.js"></script>
+    <script src="js/plugins/plugins.js"></script>
+    <script src="js/active.js"></script>
+    <script src="js/app.js"></script>
+</body></html>
