@@ -456,24 +456,67 @@ h1,h2,h3,h4,h5,h6 { font-family: 'Nunito', sans-serif; color: var(--ve-dark); }
 @media (max-width:991px) {
   .ve-hero { flex-direction:column; min-height:auto; }
   .ve-hero-left { flex:none; padding:100px 30px 60px; }
-  .ve-hero-right { flex:none; height:350px; }
+  .ve-hero-right { flex:none; height:320px; }
   .ve-nav, .ve-nav-cta { display:none; }
   .ve-toggler { display:flex; }
   .ve-whyus-content { padding-left:0; margin-top:40px; }
+  .ve-whyus-img-main { height:340px; }
   .ve-newsletter-wrap { flex-direction:column; align-items:flex-start; }
   .ve-nl-form { width:100%; }
   .ve-nl-form input { flex:1; width:auto; }
+  .ve-float-card { top:30px; right:20px; padding:12px 16px; }
+  .ve-float-card strong { font-size:18px; }
+  .ve-section { padding:70px 0; }
 }
 @media (max-width:767px) {
-  .ve-hero-left h1 { font-size:38px; }
+  .ve-hero-left { padding:90px 20px 50px; }
+  .ve-hero-left h1 { font-size:32px; }
+  .ve-hero-left p { font-size:15px; }
+  .ve-hero-right { height:260px; }
   .ve-services-grid, .ve-testi-grid, .ve-counter-grid { grid-template-columns:1fr; }
-  .ve-hero-stats { flex-wrap:wrap; gap:16px; }
-  .ve-nav-wrap { padding:0 20px; }
+  .ve-hero-stats { flex-wrap:wrap; gap:14px; }
+  .ve-hero-btns { flex-direction:column; gap:12px; }
+  .ve-btn-primary, .ve-btn-ghost { text-align:center; }
+  .ve-nav-wrap { padding:0 16px; }
   .ve-footer-bottom-inner { flex-direction:column; text-align:center; }
-  .ve-cta-content h2 { font-size:28px; }
+  .ve-cta-content h2 { font-size:26px; }
+  .ve-cta-content p { font-size:14px; }
   .text-lg-right { text-align:left; margin-top:20px; }
-  .ve-counter-item { border-right:none; border-bottom:1px solid rgba(255,255,255,0.1); }
+  .ve-counter-item { border-right:none; border-bottom:1px solid rgba(255,255,255,0.1); padding:20px 16px; }
   .ve-counter-item:last-child { border-bottom:none; }
+  .ve-counter-item strong { font-size:36px; }
+  .ve-whyus-img-main { height:260px; }
+  .ve-whyus-img-wrap { padding-bottom:20px; padding-right:20px; }
+  .ve-whyus-badge { min-width:120px; padding:16px 18px; }
+  .ve-whyus-badge strong { font-size:28px; }
+  .ve-section-header h2 { font-size:28px; }
+  .ve-float-card { display:none; }
+  .ve-hero-img-accent { display:none; }
+  .ve-stat-divider { display:none; }
+  .ve-section { padding:60px 0; }
+  .ve-insight-img { height:180px; }
+  .ve-nl-form { flex-direction:column; border-radius:8px; }
+  .ve-nl-form input, .ve-nl-form button { width:100%; border-radius:8px !important; }
+}
+@media (max-width:480px) {
+  .ve-hero-left h1 { font-size:26px; }
+  .ve-hero-badge { font-size:11px; padding:5px 14px; }
+  .ve-page-hero-content h1 { font-size:22px; }
+  .ve-nav-wrap { padding:0 14px; }
+  .ve-logo img { height:36px; }
+  .ve-section { padding:50px 0; }
+  .ve-section-header { margin-bottom:36px; }
+  .ve-section-header h2 { font-size:24px; }
+  .ve-service-card { padding:24px 20px; }
+  .ve-whyus-img-main { height:220px; }
+  .ve-testi-card { padding:20px 18px; }
+  .ve-cta-content h2 { font-size:22px; }
+  .ve-btn-white { padding:14px 24px; font-size:14px; }
+  .ve-hero-stats { gap:10px; }
+  .ve-stat strong { font-size:22px; }
+  .ve-counter-item strong { font-size:30px; }
+  .ve-insight-body { padding:18px; }
+  .ve-footer-bottom-inner ul { gap:12px; flex-wrap:wrap; justify-content:center; }
 }
 
 /* ============================================================
