@@ -60,20 +60,20 @@
         var clientSlide = $('.ve-clients-slider, .logo_slider');
         if (clientSlide.length) {
             clientSlide.owlCarousel({
-                items: 6,
+                items: 5,
                 loop: true,
                 autoplay: true,
                 autoplayTimeout: 2500,
                 smartSpeed: 600,
                 autoplayHoverPause: true,
-                margin: 20,
+                margin: 24,
                 dots: false,
                 nav: false,
                 responsive: {
                     0: { items: 2, margin: 12 },
-                    480: { items: 3, margin: 15 },
-                    768: { items: 4, margin: 18 },
-                    992: { items: 6, margin: 20 }
+                    480: { items: 3, margin: 16 },
+                    768: { items: 4, margin: 20 },
+                    992: { items: 5, margin: 24 }
                 }
             });
         }
