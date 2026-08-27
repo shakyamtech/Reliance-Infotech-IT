@@ -358,18 +358,19 @@ h1,h2,h3,h4,h5,h6 { font-family: 'Nunito', sans-serif; color: var(--ve-dark); }
 /* ============================================================
    CTA BANNER
    ============================================================ */
-.ve-cta-banner { position:relative; padding:90px 0; background-size:cover; background-position:center; }
-.ve-cta-overlay { position:absolute; inset:0; background:linear-gradient(90deg, rgba(13,27,42,0.92) 60%, rgba(13,27,42,0.6)); }
+.ve-cta-banner { position:relative; padding:95px 0; background-size:cover; background-position:center; }
+.ve-cta-overlay { position:absolute; inset:0; background:linear-gradient(90deg, rgba(13,27,42,0.72) 0%, rgba(13,27,42,0.48) 55%, rgba(13,27,42,0.28) 100%); }
 .ve-cta-content { position:relative; z-index:2; }
-.ve-cta-content h2 { font-size:38px; font-weight:900; color:#fff; margin-bottom:14px; }
-.ve-cta-content h2 span { color:var(--ve-gold); }
-.ve-cta-content p { font-size:16px; color:rgba(255,255,255,0.7); }
+.ve-cta-content h2 { font-size:38px; font-weight:900; color:#fff; margin-bottom:14px; text-shadow: 0 2px 10px rgba(0,0,0,0.6); }
+.ve-cta-content h2 span { color:var(--ve-gold); text-shadow: 0 2px 10px rgba(0,0,0,0.6); }
+.ve-cta-content p { font-size:16px; color:#ffffff; opacity: 0.92; text-shadow: 0 1px 6px rgba(0,0,0,0.7); max-width: 650px; }
 .ve-btn-white {
   display:inline-block; background:#fff; color:var(--ve-dark);
   padding:16px 34px; border-radius:8px; font-weight:800; font-size:15px;
   text-decoration:none; transition:var(--ve-trans);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.25);
 }
-.ve-btn-white:hover { background:var(--ve-gold); color:var(--ve-dark); transform:translateY(-2px); }
+.ve-btn-white:hover { background:var(--ve-gold); color:var(--ve-dark); transform:translateY(-2px); box-shadow: 0 10px 25px rgba(0,0,0,0.35); }
 .text-lg-right { text-align:right; }
 
 /* ============================================================
