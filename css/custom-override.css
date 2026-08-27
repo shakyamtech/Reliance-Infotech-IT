@@ -972,44 +972,49 @@ body { padding-top:0; }
 }
 .ve-clients-slider-wrap {
   margin-top: 30px;
+  position: relative;
 }
-.ve-client-card {
-  background: #ffffff;
-  border: 1px solid var(--ve-border);
-  border-radius: 14px;
-  height: 135px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 14px 22px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease, border-color 0.3s ease;
-  cursor: pointer;
-}
-.ve-client-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 30px rgba(13,27,42,0.10);
-  border-color: #d01f1f;
-}
-.ve-client-card img {
-  max-height: 95px;
-  max-width: 90%;
-  width: auto !important;
-  height: auto !important;
-  object-fit: contain;
-  margin: 0 auto;
-  transition: transform 0.3s ease;
-  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.04));
-}
-.ve-client-card:hover img {
-  transform: scale(1.08);
+.ve-clients-slider.owl-carousel .owl-stage-outer {
+  padding: 12px 6px 16px 6px !important;
+  margin: -12px -6px -16px -6px !important;
+  overflow: hidden;
 }
 .ve-clients-slider .owl-stage {
   display: flex;
   align-items: center;
 }
+.ve-client-card {
+  background: #ffffff;
+  border: 1px solid var(--ve-border);
+  border-radius: 12px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 20px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.04);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease, border-color 0.3s ease;
+  cursor: pointer;
+}
+.ve-client-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px rgba(13,27,42,0.09);
+  border-color: #d01f1f;
+}
+.ve-client-card img {
+  max-height: 76px;
+  max-width: 82%;
+  width: auto !important;
+  height: auto !important;
+  object-fit: contain;
+  margin: 0 auto;
+  transition: transform 0.3s ease;
+}
+.ve-client-card:hover img {
+  transform: scale(1.06);
+}
 @media(max-width:767px) {
-  .ve-client-card { height: 110px; padding: 10px 15px; }
-  .ve-client-card img { max-height: 75px; }
+  .ve-client-card { height: 100px; padding: 10px 14px; }
+  .ve-client-card img { max-height: 60px; }
 }
 
