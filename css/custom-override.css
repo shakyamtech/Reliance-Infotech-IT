@@ -267,7 +267,7 @@ h1,h2,h3,h4,h5,h6 { font-family: 'Nunito', sans-serif; color: var(--ve-dark); }
    ============================================================ */
 .ve-whyus-section { background:#fff; }
 .ve-whyus-img-wrap { position:relative; padding-bottom:40px; padding-right:40px; }
-.ve-whyus-img-main { height:480px; border-radius:16px; background-size:cover; background-position:center; }
+.ve-whyus-img-main { height:480px; border-radius:16px; background-size:cover; background-position:center 18%; }
 .ve-whyus-badge {
   position:absolute; bottom:0; right:0;
   background: var(--ve-gold); border-radius:14px; padding:22px 28px;
@@ -915,7 +915,7 @@ body { padding-top:0; }
 /* Why us section */
 .ve-whyus-section { background:#fff; }
 .ve-whyus-img-wrap { position:relative; padding-bottom:40px; padding-right:40px; }
-.ve-whyus-img-main { height:480px; border-radius:16px; background-size:cover; background-position:center; }
+.ve-whyus-img-main { height:480px; border-radius:16px; background-size:cover; background-position:center 18%; }
 .ve-whyus-badge { position:absolute; bottom:0; right:0; background:var(--ve-gold); border-radius:14px; padding:22px 28px; text-align:center; min-width:160px; }
 .ve-whyus-badge strong { display:block; font-size:40px; font-family:'Nunito',sans-serif; font-weight:900; color:var(--ve-dark); }
 .ve-whyus-badge span { font-size:12px; font-weight:600; color:var(--ve-dark); opacity:0.7; text-transform:uppercase; letter-spacing:0.8px; }
