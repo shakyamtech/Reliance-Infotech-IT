@@ -55,6 +55,28 @@
             var anim_dur = $(this).data('duration');
             $(this).css('animation-duration', anim_dur);
         });
+
+        // Client Logos Carousel
+        var clientSlide = $('.ve-clients-slider, .logo_slider');
+        if (clientSlide.length) {
+            clientSlide.owlCarousel({
+                items: 6,
+                loop: true,
+                autoplay: true,
+                autoplayTimeout: 2500,
+                smartSpeed: 600,
+                autoplayHoverPause: true,
+                margin: 20,
+                dots: false,
+                nav: false,
+                responsive: {
+                    0: { items: 2, margin: 12 },
+                    480: { items: 3, margin: 15 },
+                    768: { items: 4, margin: 18 },
+                    992: { items: 6, margin: 20 }
+                }
+            });
+        }
     }
 
     // :: 4.0 ScrollUp Active Code

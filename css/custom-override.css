@@ -933,3 +933,62 @@ body { padding-top:0; }
   .ve-nav-wrap { padding: 0 15px; }
   .ve-logo img { height: 38px; }
 }
+
+/* ============================================================
+   CLIENTS / PARTNERS SECTION ("Who Love Our Service")
+   ============================================================ */
+.ve-clients-section {
+  background: #f8fafc;
+  padding: 60px 0;
+  border-top: 1px solid var(--ve-border);
+  border-bottom: 1px solid var(--ve-border);
+  position: relative;
+}
+.ve-clients-title {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--ve-dark);
+  margin-bottom: 8px;
+  letter-spacing: -0.3px;
+}
+.ve-clients-title .ve-title-red,
+.text-danger-red {
+  color: #d01f1f !important;
+}
+.ve-clients-slider-wrap {
+  margin-top: 30px;
+}
+.ve-client-card {
+  background: #ffffff;
+  border: 1px solid var(--ve-border);
+  border-radius: 12px;
+  height: 110px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 20px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease, border-color 0.3s ease;
+  cursor: pointer;
+}
+.ve-client-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px rgba(13,27,42,0.08);
+  border-color: #d01f1f;
+}
+.ve-client-card img {
+  max-height: 70px;
+  max-width: 100%;
+  width: auto !important;
+  object-fit: contain;
+  margin: 0 auto;
+  transition: transform 0.3s ease;
+}
+.ve-client-card:hover img {
+  transform: scale(1.06);
+}
+.ve-clients-slider .owl-stage {
+  display: flex;
+  align-items: center;
+}
+
