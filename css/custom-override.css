@@ -978,8 +978,6 @@ body { padding-top:0; }
 @media(max-width:767px) {
   .ve-page-hero-content h1 { font-size:30px; }
   .ve-testi-grid { grid-template-columns:1fr; }
-  .ve-nl-form { flex-direction:column; border-radius:8px; }
-  .ve-nl-form input, .ve-nl-form button { width:100%; border-radius:8px !important; }
   .ve-about-img-2 { display:none; }
   .ve-testi-card { width: 320px; padding: 24px 20px; }
 }
