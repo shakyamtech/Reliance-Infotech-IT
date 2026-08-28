@@ -377,7 +377,7 @@ h1,h2,h3,h4,h5,h6 { font-family: 'Nunito', sans-serif; color: var(--ve-dark); }
    INSIGHTS
    ============================================================ */
 .ve-insights-section { background:#fff; }
-.ve-insight-card { border-radius:var(--ve-radius); overflow:hidden; border:1px solid var(--ve-border); transition:var(--ve-trans); background:#fff; }
+.ve-insight-card { border-radius:var(--ve-radius); overflow:hidden; border:1px solid var(--ve-border); transition:var(--ve-trans); background:#fff; margin-bottom:24px; }
 .ve-insight-card:hover { transform:translateY(-5px); box-shadow:var(--ve-shadow); }
 .ve-insight-img { height:220px; background-size:cover; background-position:center 20%; }
 .ve-insight-body { padding:26px; }
