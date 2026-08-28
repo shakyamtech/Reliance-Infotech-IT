@@ -455,7 +455,7 @@ h1,h2,h3,h4,h5,h6 { font-family: 'Nunito', sans-serif; color: var(--ve-dark); }
 }
 @media (max-width:991px) {
   .ve-hero { flex-direction:column; min-height:auto; }
-  .ve-hero-left { flex:none; padding:100px 30px 60px; }
+  .ve-hero-left { flex:none; padding:30px 30px 50px; }
   .ve-hero-right { flex:none; height:320px; }
   .ve-nav, .ve-nav-cta { display:none; }
   .ve-toggler { display:flex; }
@@ -469,7 +469,7 @@ h1,h2,h3,h4,h5,h6 { font-family: 'Nunito', sans-serif; color: var(--ve-dark); }
   .ve-section { padding:70px 0; }
 }
 @media (max-width:767px) {
-  .ve-hero-left { padding:90px 20px 50px; }
+  .ve-hero-left { padding:20px 20px 40px; }
   .ve-hero-left h1 { font-size:32px; }
   .ve-hero-left p { font-size:15px; }
   .ve-hero-right { height:260px; }
