@@ -12,12 +12,20 @@ window.addEventListener('scroll', function() {
     }
 });
 
-// Mobile menu toggle
+// Mobile menu toggle with smooth animation
 var toggler = document.getElementById('ve-toggle');
 var mobileMenu = document.getElementById('ve-mobile-menu');
 if (toggler && mobileMenu) {
     toggler.addEventListener('click', function() {
         mobileMenu.classList.toggle('open');
+        toggler.classList.toggle('active');
+    });
+    // Close menu when a link is clicked
+    mobileMenu.querySelectorAll('a').forEach(function(link) {
+        link.addEventListener('click', function() {
+            mobileMenu.classList.remove('open');
+            toggler.classList.remove('active');
+        });
     });
 }
 
