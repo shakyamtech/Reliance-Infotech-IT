@@ -75,20 +75,20 @@
     logout: function() {
       sessionStorage.removeItem(SESSION_KEY);
       localStorage.removeItem(SESSION_KEY);
-      window.location.href = 'login.html';
+      window.location.href = '/admin/login.html';
     },
 
     // Guard page (redirect if unauthenticated)
     requireAuth: function() {
       if (!this.isAuthenticated()) {
-        window.location.href = 'login.html';
+        window.location.href = '/admin/login.html';
       }
     },
 
     // Guard login page (redirect to dashboard if already authenticated)
     redirectIfAuth: function() {
       if (this.isAuthenticated()) {
-        window.location.href = 'index.html';
+        window.location.href = '/admin/index.html';
       }
     }
   };

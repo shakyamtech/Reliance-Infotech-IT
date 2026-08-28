@@ -183,7 +183,7 @@
     if (!tbody) return;
     tbody.innerHTML = (currentData.insights || []).map(function(art) {
       return '<tr>' +
-        '<td><img src="../' + art.image + '" class="adm-thumb-preview" alt="Thumb" onerror="this.src=\'../img/bg-img/server-room.jpg\'"></td>' +
+        '<td><img src="/' + art.image + '" class="adm-thumb-preview" alt="Thumb" onerror="this.src=\'/img/bg-img/server-room.jpg\'"></td>' +
         '<td><strong>' + escapeHtml(art.title) + '</strong><br><small style="color:#8e9bb0;">By ' + escapeHtml(art.author) + '</small></td>' +
         '<td><span class="adm-badge adm-badge-gold">' + escapeHtml(art.category) + '</span></td>' +
         '<td><span class="adm-badge" style="background:rgba(56,189,248,0.15);color:#38bdf8;border:1px solid rgba(56,189,248,0.3);">Page ' + (art.page || 1) + '</span></td>' +
@@ -202,7 +202,7 @@
     if (!tbody) return;
     tbody.innerHTML = (currentData.team || []).map(function(t) {
       return '<tr>' +
-        '<td><img src="../' + t.image + '" class="adm-thumb-preview" style="width:42px;height:42px;border-radius:50%;object-fit:cover;" alt="' + t.name + '"></td>' +
+        '<td><img src="/' + t.image + '" class="adm-thumb-preview" style="width:42px;height:42px;border-radius:50%;object-fit:cover;" alt="' + t.name + '"></td>' +
         '<td><strong>' + escapeHtml(t.name) + '</strong></td>' +
         '<td><span class="adm-badge adm-badge-gold">' + escapeHtml(t.role) + '</span></td>' +
         '<td>Order: #' + (t.order || 1) + '</td>' +
@@ -240,7 +240,7 @@
     grid.innerHTML = (currentData.logos || []).map(function(l) {
       return '<div class="adm-stat-card" style="padding:16px; text-align:center;">' +
         '<div style="background:#fff; border-radius:8px; padding:12px; height:80px; display:flex; align-items:center; justify-content:center; margin-bottom:12px;">' +
-          '<img src="../' + l.image + '" style="max-height:50px; max-width:80%; object-fit:contain;" alt="' + l.name + '">' +
+          '<img src="/' + l.image + '" style="max-height:50px; max-width:80%; object-fit:contain;" alt="' + l.name + '">' +
         '</div>' +
         '<h5 style="font-size:14px; margin-bottom:10px;">' + escapeHtml(l.name) + '</h5>' +
         '<div style="display:flex; justify-content:center; gap:8px;">' +

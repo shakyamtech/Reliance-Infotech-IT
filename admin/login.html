@@ -5,17 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Login — Reliance Infotech Portal</title>
     
-    <link rel="icon" type="image/x-icon" href="../img/core-img/favicon.ico">
-    <link rel="stylesheet" href="../css/font-awesome.min.css">
-    <link rel="stylesheet" href="css/admin.css">
+    <link rel="icon" type="image/x-icon" href="/img/core-img/favicon.ico">
+    <link rel="stylesheet" href="/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/admin/css/admin.css">
 </head>
 <body class="adm-login-body">
 
     <div class="adm-login-card">
         <!-- Logo Link to Homepage -->
         <div class="adm-login-logo">
-            <a href="../index.html" title="Return to Reliance Infotech Homepage">
-                <img src="../img/core-img/logo.jpg" alt="Reliance Infotech Logo">
+            <a href="/index.html" title="Return to Reliance Infotech Homepage">
+                <img src="/img/core-img/logo.jpg" alt="Reliance Infotech Logo">
             </a>
         </div>
 
@@ -64,7 +64,7 @@
         </form>
 
         <div class="adm-login-footer">
-            <a href="../index.html">
+            <a href="/index.html">
                 <i class="fa fa-angle-left"></i> Back to Public Website
             </a>
             <div style="margin-top:8px; opacity:0.6; font-size:11px;">
@@ -74,7 +74,7 @@
     </div>
 
     <!-- Scripts -->
-    <script src="js/admin-auth.js"></script>
+    <script src="/admin/js/admin-auth.js"></script>
     <script>
         // Redirect if already logged in
         AdminAuth.redirectIfAuth();
@@ -114,7 +114,7 @@
             setTimeout(function() {
                 var res = AdminAuth.login(user, pass, rem);
                 if (res.success) {
-                    window.location.href = 'index.html';
+                    window.location.href = '/admin/index.html';
                 } else {
                     submitBtn.disabled = false;
                     submitBtn.innerHTML = '<span>Sign In to Dashboard</span> <i class="fa fa-arrow-right"></i>';
