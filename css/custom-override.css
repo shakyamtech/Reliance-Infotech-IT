@@ -496,8 +496,9 @@ h1,h2,h3,h4,h5,h6 { font-family: 'Nunito', sans-serif; color: var(--ve-dark); }
   .ve-section { padding:60px 0; }
   .ve-insight-img { height:180px; }
   .ve-nl-form { flex-direction:row; border-radius:8px; overflow:hidden; width:100%; }
+  .ve-nl-right { width:100%; }
   .ve-nl-form input { flex:1; min-width:0; border-radius:0 !important; font-size:13px; padding:12px 14px; }
-  .ve-nl-form button { flex-shrink:0; border-radius:0 !important; padding:12px 18px; font-size:13px; white-space:nowrap; }
+  .ve-nl-form button { flex-shrink:0; border-radius:0 !important; padding:12px 20px; font-size:13px; white-space:nowrap; }
 }
 @media (max-width:480px) {
   .ve-hero-left h1 { font-size:26px; }
