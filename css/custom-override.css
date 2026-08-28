@@ -377,8 +377,8 @@ h1,h2,h3,h4,h5,h6 { font-family: 'Nunito', sans-serif; color: var(--ve-dark); }
    INSIGHTS
    ============================================================ */
 .ve-insights-section { background:#fff; }
-.ve-insight-card { border-radius:var(--ve-radius); overflow:hidden; border:1px solid var(--ve-border); transition:var(--ve-trans); background:#fff; margin-bottom:24px; }
-.ve-insight-card:hover { transform:translateY(-5px); box-shadow:var(--ve-shadow); }
+.ve-insight-card { border-radius:var(--ve-radius); overflow:hidden; border:1px solid var(--ve-border); transition:var(--ve-trans); background:linear-gradient(155deg, #ffffff 0%, rgba(212,160,23,0.06) 55%, rgba(26,47,75,0.05) 100%); margin-bottom:24px; }
+.ve-insight-card:hover { transform:translateY(-5px); box-shadow:0 12px 36px rgba(13,27,42,0.14); border-color:rgba(212,160,23,0.35); background:linear-gradient(155deg, #ffffff 0%, rgba(212,160,23,0.10) 55%, rgba(26,47,75,0.07) 100%); }
 .ve-insight-img { height:220px; background-size:cover; background-position:center 20%; }
 .ve-insight-body { padding:26px; }
 .ve-insight-cat { display:inline-block; background:rgba(212,160,23,0.1); color:var(--ve-gold); font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; border-radius:4px; padding:4px 10px; margin-bottom:12px; }
