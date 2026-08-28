@@ -1,4 +1,21 @@
 // Reliance Infotech Custom JS
+(function() {
+    function dismissPreloader() {
+        var p = document.querySelector('.preloader');
+        if (p) {
+            p.style.transition = 'opacity 0.35s ease';
+            p.style.opacity = '0';
+            setTimeout(function() {
+                if (p && p.parentNode) p.parentNode.removeChild(p);
+            }, 350);
+        }
+    }
+    window.addEventListener('load', dismissPreloader);
+    document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(dismissPreloader, 500);
+    });
+    setTimeout(dismissPreloader, 1000);
+})();
 
 // Sticky navbar on scroll
 window.addEventListener('scroll', function() {
