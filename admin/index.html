@@ -1166,6 +1166,23 @@
         </div>
     </div>
 
+    <!-- 4. Reusable Confirmation Modal -->
+    <div class="adm-modal-backdrop" id="admConfirmModal">
+        <div class="adm-modal" style="max-width: 440px; text-align: center; padding: 28px;">
+            <div style="width: 56px; height: 56px; border-radius: 50%; background: rgba(239, 68, 68, 0.15); color: #ef4444; display: flex; align-items: center; justify-content: center; font-size: 24px; margin: 0 auto 16px auto;">
+                <i class="fa fa-trash"></i>
+            </div>
+            <h4 id="confirmModalTitle" style="font-size: 18px; margin-bottom: 8px; color: #fff;">Confirm Deletion</h4>
+            <p id="confirmModalDesc" style="color: #94a3b8; font-size: 13px; line-height: 1.5; margin-bottom: 24px;">Are you sure you want to delete this record? This action cannot be undone.</p>
+            <div style="display: flex; gap: 12px; justify-content: center;">
+                <button type="button" class="adm-btn-secondary" style="flex: 1; padding: 10px;" onclick="AdminCMS.closeModal('admConfirmModal')">Cancel</button>
+                <button type="button" class="adm-btn-action" id="confirmModalActionBtn" style="flex: 1; background: #ef4444; border-color: #ef4444; padding: 10px;">
+                    <i class="fa fa-trash"></i> Delete
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Firebase Cloud SDKs & Configuration -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>

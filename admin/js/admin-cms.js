@@ -29,6 +29,21 @@
     }
   }
 
+  var pendingConfirmAction = null;
+  function showConfirmModal(title, desc, onConfirm) {
+    var modal = document.getElementById('admConfirmModal');
+    if (!modal) {
+      if (confirm(desc)) onConfirm();
+      return;
+    }
+    var titleEl = document.getElementById('confirmModalTitle');
+    var descEl = document.getElementById('confirmModalDesc');
+    if (titleEl) titleEl.textContent = title || 'Confirm Deletion';
+    if (descEl) descEl.textContent = desc || 'Are you sure you want to delete this record? This action cannot be undone.';
+    pendingConfirmAction = onConfirm;
+    modal.classList.add('open');
+  }
+
   // Toast notifications
   function showToast(message, type) {
     type = type || 'success';
@@ -567,11 +582,18 @@
       this.openModal('serviceModal');
     },
     deleteService: function(id) {
-      if (confirm('Are you sure you want to delete this service?')) {
-        currentData.services = (currentData.services || []).filter(function(x) { return x.id !== id; });
-        saveData();
-        renderServicesTable();
-      }
+      var s = (currentData.services || []).find(function(x) { return x.id === id; });
+      var sTitle = s ? s.title : 'this service';
+      showConfirmModal(
+        'Delete Service?',
+        'Are you sure you want to delete "' + sTitle + '"?',
+        function() {
+          currentData.services = (currentData.services || []).filter(function(x) { return x.id !== id; });
+          saveData();
+          renderServicesTable();
+          showToast('Service deleted.', 'info');
+        }
+      );
     },
     saveServiceForm: function() {
       var id = getVal('serviceEditId');
@@ -632,11 +654,18 @@
       this.openModal('insightModal');
     },
     deleteInsight: function(id) {
-      if (confirm('Are you sure you want to delete this insight article?')) {
-        currentData.insights = (currentData.insights || []).filter(function(x) { return x.id !== id; });
-        saveData();
-        renderInsightsTable();
-      }
+      var art = (currentData.insights || []).find(function(x) { return x.id === id; });
+      var artTitle = art ? art.title : 'this article';
+      showConfirmModal(
+        'Delete Tech Insight?',
+        'Are you sure you want to delete the article "' + artTitle + '"?',
+        function() {
+          currentData.insights = (currentData.insights || []).filter(function(x) { return x.id !== id; });
+          saveData();
+          renderInsightsTable();
+          showToast('Article deleted.', 'info');
+        }
+      );
     },
     saveInsightForm: function() {
       var id = getVal('insightEditId');
@@ -690,7 +719,7 @@
       document.getElementById('teamForm').reset();
       setVal('teamEditId', '');
       setVal('teamImage', 'img/bg-img/team-sushil.jpg');
-      document.getElementById('teamModalTitle').textContent = 'Add Leadership Member';
+      document.getElementById('teamModalTitle').textContent = 'Add Team Member';
       this.openModal('teamModal');
     },
     editTeam: function(id) {
@@ -699,24 +728,31 @@
       setVal('teamEditId', t.id);
       setVal('teamName', t.name);
       setVal('teamRole', t.role);
-      setVal('teamOrder', t.order || 1);
       setVal('teamImage', t.image);
-      document.getElementById('teamModalTitle').textContent = 'Edit Leadership Member';
+      setVal('teamOrder', t.order || 1);
+      document.getElementById('teamModalTitle').textContent = 'Edit Team Member';
       this.openModal('teamModal');
     },
     deleteTeam: function(id) {
-      if (confirm('Are you sure you want to delete this team member?')) {
-        currentData.team = (currentData.team || []).filter(function(x) { return x.id !== id; });
-        saveData();
-        renderTeamTable();
-      }
+      var t = (currentData.team || []).find(function(x) { return x.id === id; });
+      var tName = t ? t.name : 'this team member';
+      showConfirmModal(
+        'Delete Team Member?',
+        'Are you sure you want to remove "' + tName + '" from team list?',
+        function() {
+          currentData.team = (currentData.team || []).filter(function(x) { return x.id !== id; });
+          saveData();
+          renderTeamTable();
+          showToast('Team member removed.', 'info');
+        }
+      );
     },
     saveTeamForm: function() {
       var id = getVal('teamEditId');
       var name = getVal('teamName');
       var role = getVal('teamRole');
+      var img = getVal('teamImage') || 'img/bg-img/team-sushil.jpg';
       var order = parseInt(getVal('teamOrder') || 1);
-      var image = getVal('teamImage') || 'img/bg-img/team-sushil.jpg';
 
       if (!name || !role) {
         showToast('Please enter member name and role', 'error');
@@ -728,8 +764,8 @@
         if (t) {
           t.name = name;
           t.role = role;
+          t.image = img;
           t.order = order;
-          t.image = image;
         }
       } else {
         if (!currentData.team) currentData.team = [];
@@ -737,8 +773,8 @@
           id: 'team-' + Date.now(),
           name: name,
           role: role,
-          order: order,
-          image: image
+          image: img,
+          order: order
         });
       }
       saveData();
@@ -766,11 +802,18 @@
       this.openModal('testimonialModal');
     },
     deleteTestimonial: function(id) {
-      if (confirm('Delete this testimonial?')) {
-        currentData.testimonials = (currentData.testimonials || []).filter(function(x) { return x.id !== id; });
-        saveData();
-        renderTestimonialsTable();
-      }
+      var t = (currentData.testimonials || []).find(function(x) { return x.id === id; });
+      var tName = t ? t.name : 'this testimonial';
+      showConfirmModal(
+        'Delete Client Review?',
+        'Are you sure you want to delete review by "' + tName + '"?',
+        function() {
+          currentData.testimonials = (currentData.testimonials || []).filter(function(x) { return x.id !== id; });
+          saveData();
+          renderTestimonialsTable();
+          showToast('Review deleted.', 'info');
+        }
+      );
     },
     saveTestimonialForm: function() {
       var id = getVal('testiEditId');
@@ -825,11 +868,18 @@
       this.openModal('logoModal');
     },
     deleteLogo: function(id) {
-      if (confirm('Delete this partner logo?')) {
-        currentData.logos = (currentData.logos || []).filter(function(x) { return x.id !== id; });
-        saveData();
-        renderLogosGrid();
-      }
+      var l = (currentData.logos || []).find(function(x) { return x.id === id; });
+      var lName = l ? l.name : 'this logo';
+      showConfirmModal(
+        'Delete Partner Logo?',
+        'Are you sure you want to delete "' + lName + '"?',
+        function() {
+          currentData.logos = (currentData.logos || []).filter(function(x) { return x.id !== id; });
+          saveData();
+          renderLogosGrid();
+          showToast('Logo deleted.', 'info');
+        }
+      );
     },
     saveLogoForm: function() {
       var id = getVal('logoEditId');
@@ -866,17 +916,25 @@
       }
     },
     deleteInquiry: function(id) {
-      if (confirm('Delete this inquiry?')) {
-        addDeletedId('RelianceCMS_DeletedInquiries', id);
-        currentData.inquiries = (currentData.inquiries || []).filter(function(x) { return x.id !== id; });
-        saveData();
-        renderInquiriesTable();
-        renderDashboardStats();
+      var inq = (currentData.inquiries || []).find(function(x) { return x.id === id; });
+      var inqName = inq ? inq.name : 'this inquiry';
 
-        if (window.RelianceFirebase && typeof window.RelianceFirebase.deleteInquiry === 'function') {
-          window.RelianceFirebase.deleteInquiry(id).catch(function() {});
+      showConfirmModal(
+        'Delete Inquiry?',
+        'Are you sure you want to permanently delete the inquiry from "' + inqName + '"?',
+        function() {
+          addDeletedId('RelianceCMS_DeletedInquiries', id);
+          currentData.inquiries = (currentData.inquiries || []).filter(function(x) { return x.id !== id; });
+          saveData(true, false);
+          renderInquiriesTable();
+          renderDashboardStats();
+          showToast('Inquiry deleted.', 'info');
+
+          if (window.RelianceFirebase && typeof window.RelianceFirebase.deleteInquiry === 'function') {
+            window.RelianceFirebase.deleteInquiry(id).catch(function() {});
+          }
         }
-      }
+      );
     },
 
     // Corporate Clients & Orders
@@ -1004,18 +1062,25 @@
     },
 
     deleteClient: function(id) {
-      if (confirm('Are you sure you want to delete this client account and all its hardware logs?')) {
-        addDeletedId('RelianceCMS_DeletedClients', id);
-        currentData.clients = (currentData.clients || []).filter(function(x) { return x.id !== id; });
-        saveData(true, false);
-        renderClientsTable();
-        renderDashboardStats();
-        showToast('Client account deleted.', 'info');
+      var client = (currentData.clients || []).find(function(x) { return x.id === id; });
+      var clientName = client ? (client.company || client.name) : 'this client account';
 
-        if (window.RelianceFirebase && typeof window.RelianceFirebase.deleteClient === 'function') {
-          window.RelianceFirebase.deleteClient(id).catch(function() {});
+      showConfirmModal(
+        'Delete Client Account?',
+        'Are you sure you want to delete "' + clientName + '" and all associated hardware shipment logs?',
+        function() {
+          addDeletedId('RelianceCMS_DeletedClients', id);
+          currentData.clients = (currentData.clients || []).filter(function(x) { return x.id !== id; });
+          saveData(true, false);
+          renderClientsTable();
+          renderDashboardStats();
+          showToast('Client account deleted.', 'info');
+
+          if (window.RelianceFirebase && typeof window.RelianceFirebase.deleteClient === 'function') {
+            window.RelianceFirebase.deleteClient(id).catch(function() {});
+          }
         }
-      }
+      );
     },
 
     // Client Items Dossier & Timeline
@@ -1130,18 +1195,27 @@
     deleteDossierItem: function(itemId) {
       if (!activeDossierClientId) return;
       var client = (currentData.clients || []).find(function(x) { return x.id === activeDossierClientId; });
-      if (!client || !confirm('Remove this item from client dispatch list?')) return;
+      if (!client) return;
 
-      client.items = (client.items || []).filter(function(i) { return i.itemId !== itemId; });
-      saveData(true, false);
-      this.renderDossierItemsTable(client);
-      renderClientsTable();
-      renderDashboardStats();
-      showToast('Item removed.', 'info');
+      var item = (client.items || []).find(function(i) { return i.itemId === itemId; });
+      var itemName = item ? item.name : 'this item';
 
-      if (window.RelianceFirebase && typeof window.RelianceFirebase.saveClient === 'function') {
-        window.RelianceFirebase.saveClient(client).catch(function() {});
-      }
+      showConfirmModal(
+        'Remove Hardware Item?',
+        'Are you sure you want to remove "' + itemName + '" from this client dispatch record?',
+        function() {
+          client.items = (client.items || []).filter(function(i) { return i.itemId !== itemId; });
+          saveData(true, false);
+          AdminCMS.renderDossierItemsTable(client);
+          renderClientsTable();
+          renderDashboardStats();
+          showToast('Item removed.', 'info');
+
+          if (window.RelianceFirebase && typeof window.RelianceFirebase.saveClient === 'function') {
+            window.RelianceFirebase.saveClient(client).catch(function() {});
+          }
+        }
+      );
     },
 
     // Convert Inquiry to Corporate Client
@@ -1469,6 +1543,17 @@
   });
   document.getElementById('sidebarCloseBtn')?.addEventListener('click', function() {
     document.getElementById('admSidebar')?.classList.remove('open');
+  });
+
+  // Confirmation Modal Action Handler
+  document.getElementById('confirmModalActionBtn')?.addEventListener('click', function() {
+    var modal = document.getElementById('admConfirmModal');
+    if (modal) modal.classList.remove('open');
+    if (typeof pendingConfirmAction === 'function') {
+      var action = pendingConfirmAction;
+      pendingConfirmAction = null;
+      action();
+    }
   });
 
   // Init on DOM ready
