@@ -24,12 +24,12 @@
     },
 
     // Save updated dataset (local + cloud)
-    saveData: function(data) {
+    saveData: function(data, syncCloud) {
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
         
-        // Asynchronously sync entire CMS state to Firebase Cloud Firestore
-        if (window.RelianceFirebase && typeof window.RelianceFirebase.saveCMSData === 'function') {
+        // Asynchronously sync entire CMS state to Firebase Cloud Firestore only when not disabled
+        if (syncCloud !== false && window.RelianceFirebase && typeof window.RelianceFirebase.saveCMSData === 'function') {
           window.RelianceFirebase.saveCMSData(data).catch(function() {});
         }
         return true;

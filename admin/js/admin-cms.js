@@ -8,6 +8,7 @@
   // Ensure user is authenticated
   AdminAuth.requireAuth();
 
+  var STORAGE_KEY = 'RelianceCMS_Data';
   var currentData = null;
 
   // Toast notifications
@@ -37,8 +38,8 @@
   }
 
   // Save active data
-  function saveData(quiet) {
-    var success = RelianceCMS.saveData(currentData);
+  function saveData(quiet, syncCloud) {
+    var success = RelianceCMS.saveData(currentData, syncCloud !== undefined ? syncCloud : true);
     if (success && !quiet) {
       showToast('Changes saved and synchronized with live site!', 'success');
     }
@@ -950,7 +951,7 @@
         currentData.clients.unshift(clientObj);
       }
 
-      saveData();
+      saveData(true, false);
       renderClientsTable();
       renderDashboardStats();
       this.closeModal('clientModal');
@@ -964,7 +965,7 @@
     deleteClient: function(id) {
       if (confirm('Are you sure you want to delete this client account and all its hardware logs?')) {
         currentData.clients = (currentData.clients || []).filter(function(x) { return x.id !== id; });
-        saveData();
+        saveData(true, false);
         renderClientsTable();
         renderDashboardStats();
         showToast('Client account deleted.', 'info');
@@ -1071,7 +1072,7 @@
       };
 
       client.items.push(newItem);
-      saveData();
+      saveData(true, false);
       this.renderDossierItemsTable(client);
       renderClientsTable();
       renderDashboardStats();
@@ -1090,7 +1091,7 @@
       if (!client || !confirm('Remove this item from client dispatch list?')) return;
 
       client.items = (client.items || []).filter(function(i) { return i.itemId !== itemId; });
-      saveData();
+      saveData(true, false);
       this.renderDossierItemsTable(client);
       renderClientsTable();
       renderDashboardStats();
@@ -1331,7 +1332,7 @@
           if (cloudInquiries && cloudInquiries.length > 0) {
             var prevCount = (currentData.inquiries || []).length;
             currentData.inquiries = cloudInquiries;
-            saveData(true);
+            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(currentData)); } catch(e) {}
             renderInquiriesTable();
             renderDashboardStats();
             if (cloudInquiries.length > prevCount && prevCount > 0) {
@@ -1346,7 +1347,7 @@
         fbClientsUnsubscribe = window.RelianceFirebase.listenToClients(function(cloudClients) {
           if (cloudClients && cloudClients.length > 0) {
             currentData.clients = cloudClients;
-            saveData(true);
+            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(currentData)); } catch(e) {}
             renderClientsTable();
             renderDashboardStats();
           }
@@ -1360,9 +1361,9 @@
             var inqs = currentData.inquiries;
             var clts = currentData.clients;
             currentData = Object.assign({}, currentData, cloudCMS);
-            currentData.inquiries = inqs;
-            if (!currentData.clients || currentData.clients.length === 0) currentData.clients = clts;
-            saveData(true);
+            if (inqs && inqs.length > 0) currentData.inquiries = inqs;
+            if (clts && clts.length > 0) currentData.clients = clts;
+            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(currentData)); } catch(e) {}
             renderAll();
           }
         });
