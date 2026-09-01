@@ -10,6 +10,7 @@
 
   var STORAGE_KEY = 'RelianceCMS_Data';
   var currentData = null;
+  var convertingInquiryId = null;
 
   // Toast notifications
   function showToast(message, type) {
@@ -525,6 +526,9 @@
     closeModal: function(modalId) {
       var modal = document.getElementById(modalId);
       if (modal) modal.classList.remove('open');
+      if (modalId === 'clientModal') {
+        convertingInquiryId = null;
+      }
     },
 
     // Service CRUD
@@ -881,6 +885,7 @@
       document.getElementById('clientForm')?.reset();
       setVal('clientEditId', id || '');
       if (id) {
+        convertingInquiryId = null;
         var c = (currentData.clients || []).find(function(x) { return x.id === id; });
         if (c) {
           document.getElementById('clientModalTitle').textContent = '✏️ Edit Corporate Client';
@@ -893,7 +898,7 @@
           setVal('clientStatus', c.status || 'in-progress');
           setVal('clientNotes', c.notes);
         }
-      } else {
+      } else if (!convertingInquiryId) {
         document.getElementById('clientModalTitle').textContent = '💼 Add New Corporate Client & Project';
         setVal('clientStatus', 'in-progress');
       }
@@ -951,11 +956,28 @@
         currentData.clients.unshift(clientObj);
       }
 
+      var wasConverting = convertingInquiryId;
+      if (wasConverting) {
+        // Automatically remove converted inquiry from active inbox
+        currentData.inquiries = (currentData.inquiries || []).filter(function(x) { return x.id !== wasConverting; });
+        convertingInquiryId = null;
+        if (window.RelianceFirebase && typeof window.RelianceFirebase.deleteInquiry === 'function') {
+          window.RelianceFirebase.deleteInquiry(wasConverting).catch(function() {});
+        }
+      }
+
       saveData(true, false);
       renderClientsTable();
+      renderInquiriesTable();
       renderDashboardStats();
       this.closeModal('clientModal');
-      showToast('Client account saved successfully!', 'success');
+
+      if (wasConverting) {
+        this.switchTab('clients');
+        showToast('Inquiry converted & moved to Corporate Clients!', 'success');
+      } else {
+        showToast('Client account saved successfully!', 'success');
+      }
 
       if (window.RelianceFirebase && typeof window.RelianceFirebase.saveClient === 'function' && clientObj) {
         window.RelianceFirebase.saveClient(clientObj).catch(function() {});
@@ -1107,7 +1129,9 @@
       var inq = (currentData.inquiries || []).find(function(x) { return x.id === inquiryId; });
       if (!inq) return;
 
-      this.openClientModal();
+      convertingInquiryId = inquiryId;
+      document.getElementById('clientForm')?.reset();
+      setVal('clientEditId', '');
       document.getElementById('clientModalTitle').textContent = '💼 Convert Inquiry to Corporate Client';
       setVal('clientName', inq.name);
       setVal('clientCompany', inq.name + ' Enterprise');
@@ -1116,6 +1140,7 @@
       setVal('clientProjectTitle', inq.subject);
       setVal('clientNotes', 'Inquiry Message: ' + inq.message + ' (Received on: ' + inq.date + ')');
       setVal('clientStatus', 'in-progress');
+      this.openModal('clientModal');
     },
 
     // Print Dispatch / Delivery Note
