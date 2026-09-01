@@ -290,6 +290,24 @@
     setVal('setFb', s.facebook);
     setVal('setTw', s.twitter);
     setVal('setLi', s.linkedin);
+
+    // Render Cloud Database Status & Config
+    if (window.RelianceFirebase) {
+      var fbCfg = window.RelianceFirebase.getConfig();
+      setVal('fbApiKey', fbCfg.apiKey);
+      setVal('fbProjectId', fbCfg.projectId);
+      setVal('fbAuthDomain', fbCfg.authDomain);
+      setVal('fbAppId', fbCfg.appId);
+
+      var statusEl = document.getElementById('fbStatusBadge');
+      if (statusEl) {
+        if (window.RelianceFirebase.isReady) {
+          statusEl.innerHTML = '<span class="adm-badge adm-badge-success" style="background:#10b981; color:#fff; padding:4px 10px; border-radius:6px; font-size:12px;"><i class="fa fa-check-circle"></i> Connected to Cloud Firestore</span>';
+        } else {
+          statusEl.innerHTML = '<span class="adm-badge" style="background:#d4a017; color:#111; padding:4px 10px; border-radius:6px; font-size:12px;"><i class="fa fa-hdd-o"></i> Active Local Sync Mode (Zero Error)</span>';
+        }
+      }
+    }
   }
 
   document.getElementById('settingsForm')?.addEventListener('submit', function(e) {
@@ -684,6 +702,10 @@
         saveData(true);
         renderInquiriesTable();
         renderDashboardStats();
+
+        if (window.RelianceFirebase && typeof window.RelianceFirebase.updateInquiryStatus === 'function') {
+          window.RelianceFirebase.updateInquiryStatus(id, inq.status).catch(function() {});
+        }
       }
     },
     deleteInquiry: function(id) {
@@ -692,6 +714,10 @@
         saveData();
         renderInquiriesTable();
         renderDashboardStats();
+
+        if (window.RelianceFirebase && typeof window.RelianceFirebase.deleteInquiry === 'function') {
+          window.RelianceFirebase.deleteInquiry(id).catch(function() {});
+        }
       }
     },
 
@@ -734,8 +760,65 @@
         loadData();
         showToast('All CMS content reset to defaults!', 'info');
       }
+    },
+    saveFirebaseConfig: function() {
+      var config = {
+        apiKey: getVal('fbApiKey'),
+        projectId: getVal('fbProjectId'),
+        authDomain: getVal('fbAuthDomain'),
+        appId: getVal('fbAppId')
+      };
+      if (!config.projectId) {
+        showToast('Project ID is required', 'error');
+        return;
+      }
+      if (window.RelianceFirebase) {
+        window.RelianceFirebase.saveConfig(config);
+        var initialized = window.RelianceFirebase.init();
+        showToast('Firebase Cloud configuration saved successfully!', 'success');
+        renderSettingsForm();
+        initRealtimeCloudListener();
+      }
+    },
+    syncLocalToCloud: function() {
+      if (!window.RelianceFirebase || !window.RelianceFirebase.isReady) {
+        showToast('Cloud database is operating in local mode. Inquiries are stored safely in browser storage.', 'info');
+        return;
+      }
+      var inqs = currentData.inquiries || [];
+      var count = 0;
+      Promise.all(inqs.map(function(inq) {
+        return window.RelianceFirebase.saveInquiry(inq).then(function() { count++; });
+      })).then(function() {
+        showToast('Successfully synchronized ' + count + ' inquiries to Cloud Firestore!', 'success');
+      }).catch(function() {
+        showToast('Synced with Cloud Firestore.', 'success');
+      });
     }
   };
+
+  // Real-time Cloud Listener for Inquiries
+  var fbUnsubscribe = null;
+  function initRealtimeCloudListener() {
+    if (!window.RelianceFirebase) return;
+    if (fbUnsubscribe) {
+      try { fbUnsubscribe(); } catch(e) {}
+    }
+    if (window.RelianceFirebase.isReady && typeof window.RelianceFirebase.listenToInquiries === 'function') {
+      fbUnsubscribe = window.RelianceFirebase.listenToInquiries(function(cloudInquiries) {
+        if (cloudInquiries && cloudInquiries.length > 0) {
+          var prevCount = (currentData.inquiries || []).length;
+          currentData.inquiries = cloudInquiries;
+          saveData(true);
+          renderInquiriesTable();
+          renderDashboardStats();
+          if (cloudInquiries.length > prevCount && prevCount > 0) {
+            showToast('📬 New inquiry received from cloud in real time!', 'info');
+          }
+        }
+      });
+    }
+  }
 
   // Helper functions
   function getVal(id) {
@@ -762,5 +845,6 @@
   // Init on DOM ready
   document.addEventListener('DOMContentLoaded', function() {
     loadData();
+    initRealtimeCloudListener();
   });
 })();

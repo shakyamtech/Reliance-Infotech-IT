@@ -585,6 +585,42 @@
                                 </form>
                             </div>
 
+                            <!-- Cloud Database & Firebase Sync Card -->
+                            <div class="adm-section-card">
+                                <div class="adm-section-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                                    <h4>☁️ Firebase Cloud Database &amp; Sync</h4>
+                                    <div id="fbStatusBadge"></div>
+                                </div>
+                                <p style="font-size:13px; color:#94a3b8; margin-bottom:16px;">Synchronizes contact inquiries across multiple mobile devices, tablets, and computers in real-time with zero-error local fallback.</p>
+                                
+                                <form id="fbConfigForm" onsubmit="event.preventDefault(); AdminCMS.saveFirebaseConfig();">
+                                    <div class="adm-grid-2">
+                                        <div class="adm-form-group">
+                                            <label>Firebase Project ID</label>
+                                            <input type="text" id="fbProjectId" class="adm-input" placeholder="reliance-infotech-it">
+                                        </div>
+                                        <div class="adm-form-group">
+                                            <label>API Key (Optional / Pre-configured)</label>
+                                            <input type="text" id="fbApiKey" class="adm-input" placeholder="AIzaSy...">
+                                        </div>
+                                    </div>
+                                    <div class="adm-grid-2">
+                                        <div class="adm-form-group">
+                                            <label>Auth Domain</label>
+                                            <input type="text" id="fbAuthDomain" class="adm-input" placeholder="reliance-infotech-it.firebaseapp.com">
+                                        </div>
+                                        <div class="adm-form-group">
+                                            <label>App ID</label>
+                                            <input type="text" id="fbAppId" class="adm-input" placeholder="1:847291038291:web:...">
+                                        </div>
+                                    </div>
+                                    <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:5px;">
+                                        <button type="submit" class="adm-btn-action"><i class="fa fa-cloud-upload"></i> Save Cloud Config</button>
+                                        <button type="button" class="adm-btn-secondary" onclick="AdminCMS.syncLocalToCloud()"><i class="fa fa-refresh"></i> Push Local Data to Cloud</button>
+                                    </div>
+                                </form>
+                            </div>
+
                             <!-- Backup & Restore Card -->
                             <div class="adm-section-card">
                                 <div class="adm-section-header">
@@ -814,6 +850,11 @@
             </form>
         </div>
     </div>
+
+    <!-- Firebase Cloud SDKs & Configuration -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="/js/firebase-config.js"></script>
 
     <!-- Scripts -->
     <script src="/admin/js/admin-auth.js"></script>

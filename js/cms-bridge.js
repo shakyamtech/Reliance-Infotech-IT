@@ -62,6 +62,12 @@
         data.analytics.unreadInquiries = (data.analytics.unreadInquiries || 0) + 1;
       }
       this.saveData(data);
+
+      // Asynchronously sync to Cloud Firebase if available
+      if (window.RelianceFirebase && typeof window.RelianceFirebase.saveInquiry === 'function') {
+        window.RelianceFirebase.saveInquiry(newInq).catch(function() {});
+      }
+
       return newInq;
     },
 
@@ -86,17 +92,17 @@
     contactForms.forEach(function(form) {
       form.addEventListener('submit', function(e) {
         e.preventDefault();
-        var name = form.querySelector('[name="name"], #name, input[type="text"]')?.value || '';
-        var email = form.querySelector('[name="email"], #email, input[type="email"]')?.value || '';
-        var phone = form.querySelector('[name="phone"], #phone, [name="number"]')?.value || '';
-        var subject = form.querySelector('[name="subject"], #subject')?.value || 'Website Contact Form';
-        var message = form.querySelector('[name="message"], #message, textarea')?.value || '';
+        var name = (form.querySelector('[name="name"], #name, input[type="text"]')?.value || '').trim();
+        var email = (form.querySelector('[name="email"], #email, input[type="email"]')?.value || '').trim();
+        var phone = (form.querySelector('[name="phone"], #phone, input[type="tel"], [name="number"]')?.value || '').trim();
+        var subject = (form.querySelector('[name="subject"], #subject, select')?.value || 'Website Inquiry').trim();
+        var message = (form.querySelector('[name="message"], #message, textarea')?.value || '').trim();
 
         window.RelianceCMS.submitInquiry({
-          name: name,
+          name: name || 'Website Visitor',
           email: email,
           phone: phone,
-          subject: subject,
+          subject: subject || 'General IT Inquiry',
           message: message
         });
 
