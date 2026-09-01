@@ -1045,3 +1045,35 @@ a:hover {
   .adm-topbar { padding: 0 16px; }
   .adm-login-card { padding: 30px 20px; }
 }
+
+/* ============================================================
+   PRINT MEDIA STYLES (DISPATCH / DELIVERY NOTE)
+   ============================================================ */
+@media print {
+  body * {
+    visibility: hidden !important;
+  }
+  #deliverySlipModal, #deliverySlipModal * {
+    visibility: visible !important;
+  }
+  #deliverySlipModal {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  #deliverySlipModal .adm-modal {
+    box-shadow: none !important;
+    border: none !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+}

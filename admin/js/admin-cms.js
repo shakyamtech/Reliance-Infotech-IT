@@ -48,6 +48,7 @@
   // Render all modules
   function renderAll() {
     renderDashboardStats();
+    renderClientsTable();
     renderHomepageForm();
     renderServicesTable();
     renderInsightsTable();
@@ -64,14 +65,43 @@
       badge.textContent = unreadCount;
       badge.style.display = unreadCount > 0 ? 'inline-block' : 'none';
     }
+
+    // Update clients count badge
+    var clientCount = (currentData.clients || []).length;
+    var cBadge = document.getElementById('clientsBadge');
+    if (cBadge) {
+      cBadge.textContent = clientCount;
+      cBadge.style.display = clientCount > 0 ? 'inline-block' : 'none';
+    }
   }
 
-  // 1. Dashboard Stats
+  // 1. Dashboard Stats (Dynamically Computed from Client Dispatches)
   function renderDashboardStats() {
     var a = currentData.analytics || {};
-    document.getElementById('statSalesUnits').textContent = (a.totalSalesUnits || 1480).toLocaleString() + ' Units';
-    document.getElementById('statTotalClients').textContent = (a.totalClients || 520).toLocaleString() + '+';
-    document.getElementById('statOngoingProjects').textContent = (a.ongoingProjects || 38) + ' Active';
+    var clients = currentData.clients || [];
+
+    // Dynamically calculate total dispatched hardware units
+    var totalDispatchedUnits = 0;
+    var totalDispatchValue = 0;
+    var ongoingDeployments = 0;
+
+    clients.forEach(function(c) {
+      if (c.status === 'in-progress') ongoingDeployments++;
+      (c.items || []).forEach(function(item) {
+        var qty = Number(item.quantity) || 1;
+        var price = Number(item.unitPrice) || 0;
+        totalDispatchedUnits += qty;
+        totalDispatchValue += (qty * price);
+      });
+    });
+
+    var dynamicSalesUnits = (a.totalSalesUnits || 1400) + totalDispatchedUnits;
+    var dynamicTotalClients = (a.totalClients || 516) + clients.length;
+    var dynamicOngoing = (a.ongoingProjects || 35) + ongoingDeployments;
+
+    document.getElementById('statSalesUnits').textContent = dynamicSalesUnits.toLocaleString() + ' Units';
+    document.getElementById('statTotalClients').textContent = dynamicTotalClients.toLocaleString() + '+';
+    document.getElementById('statOngoingProjects').textContent = dynamicOngoing + ' Active';
     document.getElementById('statTotalInquiries').textContent = (currentData.inquiries || []).length + ' Leads';
 
     // Render Recent Inquiries List on Dashboard
@@ -251,7 +281,111 @@
     }).join('');
   }
 
-  // 8. Inquiries Inbox
+  // 8. Corporate Clients & Hardware Dispatches Management
+  var activeDossierClientId = null;
+
+  function renderClientsTable(customList) {
+    var clients = customList || currentData.clients || [];
+    var allClients = currentData.clients || [];
+
+    // Calculate Summary Stats
+    var totalUnits = 0;
+    var totalValue = 0;
+    var activeOngoing = 0;
+
+    allClients.forEach(function(c) {
+      if (c.status === 'in-progress') activeOngoing++;
+      (c.items || []).forEach(function(i) {
+        var qty = Number(i.quantity) || 1;
+        var p = Number(i.unitPrice) || 0;
+        totalUnits += qty;
+        totalValue += (qty * p);
+      });
+    });
+
+    if (document.getElementById('statClientCount')) {
+      document.getElementById('statClientCount').textContent = allClients.length + ' Accounts';
+    }
+    if (document.getElementById('statDispatchedUnits')) {
+      document.getElementById('statDispatchedUnits').textContent = totalUnits.toLocaleString() + ' Units';
+    }
+    if (document.getElementById('statTotalOrderValue')) {
+      document.getElementById('statTotalOrderValue').textContent = 'NPR ' + totalValue.toLocaleString();
+    }
+    if (document.getElementById('statActiveDeployments')) {
+      document.getElementById('statActiveDeployments').textContent = activeOngoing + ' Ongoing';
+    }
+
+    var tbody = document.getElementById('clientsTableBody');
+    if (!tbody) return;
+
+    if (clients.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:35px; color:#8e9bb0;">No corporate clients found matching your query. Click "+ Add New Client & Order" to register one.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = clients.map(function(c) {
+      var clientUnits = 0;
+      var clientVal = 0;
+      var itemsSummary = (c.items || []).map(function(i) {
+        var q = Number(i.quantity) || 1;
+        var p = Number(i.unitPrice) || 0;
+        clientUnits += q;
+        clientVal += (q * p);
+        return '<span style="display:inline-block; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:4px; padding:2px 6px; margin:2px; font-size:11px; color:#e2e8f0;">' +
+          '<strong>' + q + 'x</strong> ' + escapeHtml(i.name.length > 28 ? i.name.substring(0,28) + '...' : i.name) +
+        '</span>';
+      }).join('');
+
+      if (!itemsSummary) {
+        itemsSummary = '<small style="color:#64748b; font-style:italic;">No hardware logged yet</small>';
+      }
+
+      var statusBadge = '';
+      if (c.status === 'completed') {
+        statusBadge = '<span class="adm-badge" style="background:#10b981; color:#fff; padding:4px 8px; border-radius:4px; font-size:11px; font-weight:600;"><i class="fa fa-check-circle"></i> Completed</span>';
+      } else if (c.status === 'in-progress') {
+        statusBadge = '<span class="adm-badge" style="background:#2563eb; color:#fff; padding:4px 8px; border-radius:4px; font-size:11px; font-weight:600;"><i class="fa fa-wrench"></i> In-Progress</span>';
+      } else if (c.status === 'amc-active') {
+        statusBadge = '<span class="adm-badge" style="background:#8b5cf6; color:#fff; padding:4px 8px; border-radius:4px; font-size:11px; font-weight:600;"><i class="fa fa-shield"></i> AMC Active</span>';
+      } else {
+        statusBadge = '<span class="adm-badge adm-badge-gold" style="padding:4px 8px; border-radius:4px; font-size:11px; font-weight:600;">Quotation Sent</span>';
+      }
+
+      return '<tr>' +
+        '<td>' +
+          '<div style="font-weight:700; color:#f8fafc; font-size:14px;">' + escapeHtml(c.company || c.name) + '</div>' +
+          '<div style="font-size:12px; color:#d4a017;"><i class="fa fa-user"></i> ' + escapeHtml(c.name) + '</div>' +
+          '<div style="font-size:11px; color:#64748b; margin-top:2px;">Reg: ' + (c.createdDate || 'Recent') + '</div>' +
+        '</td>' +
+        '<td>' +
+          '<strong style="color:#cbd5e1; font-size:13px;">' + escapeHtml(c.projectTitle || 'General IT Supplies') + '</strong>' +
+          (c.notes ? '<br><small style="color:#8e9bb0; font-size:11px;">' + escapeHtml(c.notes.length > 40 ? c.notes.substring(0,40) + '...' : c.notes) + '</small>' : '') +
+        '</td>' +
+        '<td>' +
+          '<a href="tel:' + (c.phone || '') + '" style="color:#38bdf8; font-size:12px;"><i class="fa fa-phone"></i> ' + escapeHtml(c.phone || 'N/A') + '</a><br>' +
+          '<a href="mailto:' + (c.email || '') + '" style="color:#94a3b8; font-size:11px;"><i class="fa fa-envelope"></i> ' + escapeHtml(c.email || 'N/A') + '</a><br>' +
+          '<small style="color:#64748b; font-size:11px;"><i class="fa fa-map-marker"></i> ' + escapeHtml(c.address || 'Kathmandu') + '</small>' +
+        '</td>' +
+        '<td style="max-width:260px;">' +
+          '<div style="margin-bottom:4px; font-weight:700; font-size:12px; color:#3b82f6;"><i class="fa fa-cubes"></i> ' + clientUnits + ' Units Total</div>' +
+          itemsSummary +
+        '</td>' +
+        '<td><strong style="color:#10b981; font-size:13px;">NPR ' + clientVal.toLocaleString() + '</strong></td>' +
+        '<td>' + statusBadge + '</td>' +
+        '<td>' +
+          '<div class="adm-table-actions">' +
+            '<button class="adm-btn-sm" style="background:#2563eb; color:#fff; width:auto; padding:5px 9px; font-size:11px;" onclick="AdminCMS.openClientDossier(\'' + c.id + '\')" title="View Items Dossier & Timeline"><i class="fa fa-cubes"></i> Items (' + (c.items ? c.items.length : 0) + ')</button>' +
+            '<button class="adm-btn-sm" style="background:rgba(255,255,255,0.08); color:#f8fafc;" onclick="AdminCMS.printClientSlip(\'' + c.id + '\')" title="Print Delivery Slip / Dispatch Note"><i class="fa fa-print"></i></button>' +
+            '<button class="adm-btn-sm" onclick="AdminCMS.openClientModal(\'' + c.id + '\')" title="Edit Client"><i class="fa fa-pencil"></i></button>' +
+            '<button class="adm-btn-sm delete" onclick="AdminCMS.deleteClient(\'' + c.id + '\')" title="Delete Client"><i class="fa fa-trash"></i></button>' +
+          '</div>' +
+        '</td>' +
+      '</tr>';
+    }).join('');
+  }
+
+  // 9. Inquiries Inbox
   function renderInquiriesTable() {
     var tbody = document.getElementById('inquiriesTableBody');
     if (!tbody) return;
@@ -267,8 +401,9 @@
         '<td><strong>' + escapeHtml(inq.name) + '</strong><br><small style="color:#8e9bb0;">' + inq.date + '</small></td>' +
         '<td><a href="mailto:' + inq.email + '">' + escapeHtml(inq.email) + '</a><br><small>' + escapeHtml(inq.phone) + '</small></td>' +
         '<td><strong>' + escapeHtml(inq.subject) + '</strong></td>' +
-        '<td style="max-width:320px; font-size:13px; color:#cbd5e1;">' + escapeHtml(inq.message) + '</td>' +
+        '<td style="max-width:300px; font-size:13px; color:#cbd5e1;">' + escapeHtml(inq.message) + '</td>' +
         '<td><div class="adm-table-actions">' +
+          '<button class="adm-btn-sm" style="background:#2563eb; color:#fff; width:auto; padding:5px 9px; font-size:11px;" onclick="AdminCMS.convertInquiryToClient(\'' + inq.id + '\')" title="Convert to Corporate Client & Order"><i class="fa fa-user-plus"></i> Convert</button>' +
           '<button class="adm-btn-sm" onclick="AdminCMS.toggleInquiryStatus(\'' + inq.id + '\')" title="Toggle Read/Unread"><i class="fa fa-envelope-open"></i></button>' +
           '<button class="adm-btn-sm delete" onclick="AdminCMS.deleteInquiry(\'' + inq.id + '\')" title="Delete"><i class="fa fa-trash"></i></button>' +
         '</div></td>' +
@@ -721,6 +856,373 @@
       }
     },
 
+    // Corporate Clients & Orders
+    filterClients: function() {
+      var query = getVal('clientSearchInput').toLowerCase();
+      var status = getVal('clientStatusFilter');
+      var all = currentData.clients || [];
+
+      var filtered = all.filter(function(c) {
+        var matchStatus = (status === 'all' || !status) ? true : (c.status === status);
+        var matchText = true;
+        if (query) {
+          var itemsText = (c.items || []).map(function(i) { return (i.name || '') + ' ' + (i.category || ''); }).join(' ').toLowerCase();
+          var clientText = ((c.name || '') + ' ' + (c.company || '') + ' ' + (c.email || '') + ' ' + (c.phone || '') + ' ' + (c.projectTitle || '')).toLowerCase();
+          matchText = clientText.includes(query) || itemsText.includes(query);
+        }
+        return matchStatus && matchText;
+      });
+
+      renderClientsTable(filtered);
+    },
+
+    openClientModal: function(id) {
+      document.getElementById('clientForm')?.reset();
+      setVal('clientEditId', id || '');
+      if (id) {
+        var c = (currentData.clients || []).find(function(x) { return x.id === id; });
+        if (c) {
+          document.getElementById('clientModalTitle').textContent = '✏️ Edit Corporate Client';
+          setVal('clientName', c.name);
+          setVal('clientCompany', c.company);
+          setVal('clientEmail', c.email);
+          setVal('clientPhone', c.phone);
+          setVal('clientAddress', c.address);
+          setVal('clientProjectTitle', c.projectTitle);
+          setVal('clientStatus', c.status || 'in-progress');
+          setVal('clientNotes', c.notes);
+        }
+      } else {
+        document.getElementById('clientModalTitle').textContent = '💼 Add New Corporate Client & Project';
+        setVal('clientStatus', 'in-progress');
+      }
+      this.openModal('clientModal');
+    },
+
+    saveClientForm: function() {
+      var id = getVal('clientEditId');
+      var name = getVal('clientName');
+      var company = getVal('clientCompany');
+      var email = getVal('clientEmail');
+      var phone = getVal('clientPhone');
+      var address = getVal('clientAddress');
+      var projectTitle = getVal('clientProjectTitle');
+      var status = getVal('clientStatus') || 'in-progress';
+      var notes = getVal('clientNotes');
+
+      if (!name || !phone) {
+        showToast('Client name and phone number are required', 'error');
+        return;
+      }
+
+      if (!currentData.clients) currentData.clients = [];
+
+      var clientObj = null;
+      if (id) {
+        var c = currentData.clients.find(function(x) { return x.id === id; });
+        if (c) {
+          c.name = name;
+          c.company = company;
+          c.email = email;
+          c.phone = phone;
+          c.address = address;
+          c.projectTitle = projectTitle;
+          c.status = status;
+          c.notes = notes;
+          clientObj = c;
+        }
+      } else {
+        var now = new Date();
+        var dateStr = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
+        clientObj = {
+          id: 'client-' + Date.now(),
+          name: name,
+          company: company,
+          email: email,
+          phone: phone,
+          address: address,
+          projectTitle: projectTitle,
+          status: status,
+          notes: notes,
+          createdDate: dateStr,
+          items: []
+        };
+        currentData.clients.unshift(clientObj);
+      }
+
+      saveData();
+      renderClientsTable();
+      renderDashboardStats();
+      this.closeModal('clientModal');
+      showToast('Client account saved successfully!', 'success');
+
+      if (window.RelianceFirebase && typeof window.RelianceFirebase.saveClient === 'function' && clientObj) {
+        window.RelianceFirebase.saveClient(clientObj).catch(function() {});
+      }
+    },
+
+    deleteClient: function(id) {
+      if (confirm('Are you sure you want to delete this client account and all its hardware logs?')) {
+        currentData.clients = (currentData.clients || []).filter(function(x) { return x.id !== id; });
+        saveData();
+        renderClientsTable();
+        renderDashboardStats();
+        showToast('Client account deleted.', 'info');
+
+        if (window.RelianceFirebase && typeof window.RelianceFirebase.deleteClient === 'function') {
+          window.RelianceFirebase.deleteClient(id).catch(function() {});
+        }
+      }
+    },
+
+    // Client Items Dossier & Timeline
+    openClientDossier: function(id) {
+      activeDossierClientId = id;
+      var c = (currentData.clients || []).find(function(x) { return x.id === id; });
+      if (!c) return;
+
+      document.getElementById('dossierClientName').textContent = c.company || c.name;
+      document.getElementById('dossierCompanySub').textContent = (c.company ? c.name + ' · ' : '') + (c.projectTitle || 'Corporate Account');
+
+      var infoStrip = document.getElementById('dossierInfoStrip');
+      if (infoStrip) {
+        infoStrip.innerHTML =
+          '<div><strong style="color:#8e9bb0; display:block; font-size:11px;">CONTACT PERSON</strong><span style="color:#fff;">' + escapeHtml(c.name) + '</span></div>' +
+          '<div><strong style="color:#8e9bb0; display:block; font-size:11px;">PHONE</strong><span style="color:#38bdf8;">' + escapeHtml(c.phone) + '</span></div>' +
+          '<div><strong style="color:#8e9bb0; display:block; font-size:11px;">EMAIL</strong><span style="color:#94a3b8;">' + escapeHtml(c.email || 'N/A') + '</span></div>' +
+          '<div><strong style="color:#8e9bb0; display:block; font-size:11px;">LOCATION</strong><span style="color:#e2e8f0;">' + escapeHtml(c.address || 'Kathmandu') + '</span></div>' +
+          '<div><strong style="color:#8e9bb0; display:block; font-size:11px;">STATUS</strong><span style="color:#d4a017; font-weight:700; text-transform:uppercase;">' + escapeHtml(c.status) + '</span></div>';
+      }
+
+      this.renderDossierItemsTable(c);
+      document.getElementById('dossierAddItemForm')?.reset();
+      setVal('newItemDate', new Date().toISOString().slice(0,10));
+      this.openModal('clientDossierModal');
+    },
+
+    renderDossierItemsTable: function(client) {
+      var tbody = document.getElementById('dossierItemsTableBody');
+      if (!tbody) return;
+      var items = client.items || [];
+      var totalUnits = 0;
+      var totalVal = 0;
+
+      if (items.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding:25px; color:#8e9bb0;">No hardware or service items logged for this client yet. Use the form below to record dispatches.</td></tr>';
+      } else {
+        tbody.innerHTML = items.map(function(item, idx) {
+          var q = Number(item.quantity) || 1;
+          var p = Number(item.unitPrice) || 0;
+          var rowTotal = q * p;
+          totalUnits += q;
+          totalVal += rowTotal;
+
+          var itemStatusClass = item.status === 'Delivered' ? 'adm-badge-success' : (item.status === 'Under Installation' ? 'adm-badge-gold' : 'adm-badge');
+
+          return '<tr>' +
+            '<td><strong>' + (idx + 1) + '</strong></td>' +
+            '<td><strong style="color:#f8fafc;">' + escapeHtml(item.name) + '</strong></td>' +
+            '<td><span style="font-size:11px; background:rgba(255,255,255,0.06); padding:3px 7px; border-radius:4px;">' + escapeHtml(item.category) + '</span></td>' +
+            '<td><strong style="color:#3b82f6; font-size:14px;">' + q + '</strong></td>' +
+            '<td>NPR ' + p.toLocaleString() + '</td>' +
+            '<td><strong style="color:#10b981;">NPR ' + rowTotal.toLocaleString() + '</strong></td>' +
+            '<td><small style="color:#8e9bb0;">' + escapeHtml(item.warranty || 'Standard') + '</small></td>' +
+            '<td><span class="adm-badge ' + itemStatusClass + '" style="font-size:11px; padding:3px 7px;">' + escapeHtml(item.status || 'Delivered') + '</span></td>' +
+            '<td><button type="button" class="adm-btn-sm delete" onclick="AdminCMS.deleteDossierItem(\'' + item.itemId + '\')" title="Remove Item"><i class="fa fa-times"></i></button></td>' +
+          '</tr>';
+        }).join('');
+      }
+
+      var badgeEl = document.getElementById('dossierTotalBadge');
+      if (badgeEl) {
+        badgeEl.innerHTML = '<i class="fa fa-calculator"></i> Total: <strong>' + totalUnits + ' Units</strong> · <span style="color:#10b981;">NPR ' + totalVal.toLocaleString() + '</span>';
+      }
+    },
+
+    addDossierItem: function() {
+      if (!activeDossierClientId) return;
+      var client = (currentData.clients || []).find(function(x) { return x.id === activeDossierClientId; });
+      if (!client) return;
+
+      var name = getVal('newItemName');
+      var category = getVal('newItemCategory');
+      var qty = parseInt(getVal('newItemQty')) || 1;
+      var price = parseInt(getVal('newItemPrice')) || 0;
+      var status = getVal('newItemStatus') || 'Delivered';
+      var warranty = getVal('newItemWarranty') || 'Standard Warranty';
+      var date = getVal('newItemDate') || new Date().toISOString().slice(0,10);
+
+      if (!name) {
+        showToast('Product name is required', 'error');
+        return;
+      }
+
+      if (!client.items) client.items = [];
+
+      var newItem = {
+        itemId: 'itm-' + Date.now(),
+        name: name,
+        category: category,
+        quantity: qty,
+        unitPrice: price,
+        status: status,
+        warranty: warranty,
+        dispatchDate: date
+      };
+
+      client.items.push(newItem);
+      saveData();
+      this.renderDossierItemsTable(client);
+      renderClientsTable();
+      renderDashboardStats();
+      document.getElementById('dossierAddItemForm')?.reset();
+      setVal('newItemDate', new Date().toISOString().slice(0,10));
+      showToast('Dispatched item added to client dossier!', 'success');
+
+      if (window.RelianceFirebase && typeof window.RelianceFirebase.saveClient === 'function') {
+        window.RelianceFirebase.saveClient(client).catch(function() {});
+      }
+    },
+
+    deleteDossierItem: function(itemId) {
+      if (!activeDossierClientId) return;
+      var client = (currentData.clients || []).find(function(x) { return x.id === activeDossierClientId; });
+      if (!client || !confirm('Remove this item from client dispatch list?')) return;
+
+      client.items = (client.items || []).filter(function(i) { return i.itemId !== itemId; });
+      saveData();
+      this.renderDossierItemsTable(client);
+      renderClientsTable();
+      renderDashboardStats();
+      showToast('Item removed.', 'info');
+
+      if (window.RelianceFirebase && typeof window.RelianceFirebase.saveClient === 'function') {
+        window.RelianceFirebase.saveClient(client).catch(function() {});
+      }
+    },
+
+    // Convert Inquiry to Corporate Client
+    convertInquiryToClient: function(inquiryId) {
+      var inq = (currentData.inquiries || []).find(function(x) { return x.id === inquiryId; });
+      if (!inq) return;
+
+      this.openClientModal();
+      document.getElementById('clientModalTitle').textContent = '💼 Convert Inquiry to Corporate Client';
+      setVal('clientName', inq.name);
+      setVal('clientCompany', inq.name + ' Enterprise');
+      setVal('clientEmail', inq.email);
+      setVal('clientPhone', inq.phone);
+      setVal('clientProjectTitle', inq.subject);
+      setVal('clientNotes', 'Inquiry Message: ' + inq.message + ' (Received on: ' + inq.date + ')');
+      setVal('clientStatus', 'in-progress');
+    },
+
+    // Print Dispatch / Delivery Note
+    printCurrentClientSlip: function() {
+      if (activeDossierClientId) {
+        this.printClientSlip(activeDossierClientId);
+      }
+    },
+
+    printClientSlip: function(clientId) {
+      var c = (currentData.clients || []).find(function(x) { return x.id === clientId; });
+      if (!c) return;
+
+      var s = currentData.settings || {};
+      var items = c.items || [];
+      var totalUnits = 0;
+      var grandTotal = 0;
+
+      var itemsRows = items.map(function(item, idx) {
+        var q = Number(item.quantity) || 1;
+        var p = Number(item.unitPrice) || 0;
+        var rTotal = q * p;
+        totalUnits += q;
+        grandTotal += rTotal;
+        return '<tr style="border-bottom:1px solid #e2e8f0;">' +
+          '<td style="padding:10px; text-align:center;">' + (idx + 1) + '</td>' +
+          '<td style="padding:10px;"><strong>' + escapeHtml(item.name) + '</strong><br><small style="color:#64748b;">Warranty: ' + escapeHtml(item.warranty || '1 Year Official') + '</small></td>' +
+          '<td style="padding:10px; text-align:center;">' + escapeHtml(item.category) + '</td>' +
+          '<td style="padding:10px; text-align:center; font-weight:700;">' + q + '</td>' +
+          '<td style="padding:10px; text-align:right;">NPR ' + p.toLocaleString() + '</td>' +
+          '<td style="padding:10px; text-align:right; font-weight:700;">NPR ' + rTotal.toLocaleString() + '</td>' +
+        '</tr>';
+      }).join('');
+
+      if (!itemsRows) {
+        itemsRows = '<tr><td colspan="6" style="text-align:center; padding:20px; color:#64748b;">No items recorded yet.</td></tr>';
+      }
+
+      var slipHtml =
+        '<div style="border-bottom:2px solid #0f172a; padding-bottom:18px; margin-bottom:20px; display:flex; justify-content:space-between; align-items:flex-start;">' +
+          '<div>' +
+            '<h2 style="margin:0; font-size:22px; color:#0f172a; font-weight:800;">' + escapeHtml(s.companyName || 'Reliance Infotech') + '</h2>' +
+            '<p style="margin:4px 0 0 0; font-size:12px; color:#475569;">' + escapeHtml(s.tagline || 'IT Solutions & Hardware Supplies') + '</p>' +
+            '<p style="margin:2px 0 0 0; font-size:12px; color:#64748b;">' + escapeHtml(s.address || 'Putalisadak, Kathmandu, Nepal') + ' · Tel: ' + escapeHtml(s.phone1 || '01-5367867') + '</p>' +
+            '<p style="margin:2px 0 0 0; font-size:12px; color:#64748b;">Email: ' + escapeHtml(s.email || 'info@relianceit.com.np') + '</p>' +
+          '</div>' +
+          '<div style="text-align:right;">' +
+            '<div style="font-size:16px; font-weight:800; color:#2563eb; letter-spacing:0.5px;">DISPATCH / DELIVERY NOTE</div>' +
+            '<div style="font-size:12px; color:#64748b; margin-top:4px;">Ref No: <strong>REL-' + c.id.replace(/[^0-9]/g, '').slice(-6) + '</strong></div>' +
+            '<div style="font-size:12px; color:#64748b;">Date: <strong>' + new Date().toLocaleDateString('en-US', { year:'numeric', month:'short', day:'numeric'}) + '</strong></div>' +
+          '</div>' +
+        '</div>' +
+
+        '<div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:14px; margin-bottom:20px; font-size:13px;">' +
+          '<div>' +
+            '<span style="color:#64748b; font-size:11px; font-weight:700; text-transform:uppercase;">DELIVERED TO / CLIENT:</span><br>' +
+            '<strong style="font-size:15px; color:#0f172a;">' + escapeHtml(c.company || c.name) + '</strong><br>' +
+            '<span>Attn: ' + escapeHtml(c.name) + '</span><br>' +
+            '<span>' + escapeHtml(c.address || 'Kathmandu, Nepal') + '</span>' +
+          '</div>' +
+          '<div>' +
+            '<span style="color:#64748b; font-size:11px; font-weight:700; text-transform:uppercase;">PROJECT & CONTACT:</span><br>' +
+            '<strong style="color:#0f172a;">' + escapeHtml(c.projectTitle || 'IT Hardware Deployment') + '</strong><br>' +
+            '<span>Phone: ' + escapeHtml(c.phone) + '</span><br>' +
+            '<span>Email: ' + escapeHtml(c.email || 'N/A') + '</span>' +
+          '</div>' +
+        '</div>' +
+
+        '<table style="width:100%; border-collapse:collapse; font-size:13px; margin-bottom:20px;">' +
+          '<thead>' +
+            '<tr style="background:#0f172a; color:#fff;">' +
+              '<th style="padding:8px; text-align:center;">#</th>' +
+              '<th style="padding:8px; text-align:left;">Item Description &amp; Warranty</th>' +
+              '<th style="padding:8px; text-align:center;">Category</th>' +
+              '<th style="padding:8px; text-align:center;">Qty</th>' +
+              '<th style="padding:8px; text-align:right;">Rate (NPR)</th>' +
+              '<th style="padding:8px; text-align:right;">Amount (NPR)</th>' +
+            '</tr>' +
+          '</thead>' +
+          '<tbody>' + itemsRows + '</tbody>' +
+          '<tfoot>' +
+            '<tr style="background:#f1f5f9; font-weight:800; border-top:2px solid #0f172a;">' +
+              '<td colspan="3" style="padding:10px; text-align:right;">TOTAL HARDWARE DISPATCHED:</td>' +
+              '<td style="padding:10px; text-align:center; color:#2563eb;">' + totalUnits + ' Units</td>' +
+              '<td style="padding:10px; text-align:right;">GRAND TOTAL:</td>' +
+              '<td style="padding:10px; text-align:right; color:#10b981; font-size:15px;">NPR ' + grandTotal.toLocaleString() + '</td>' +
+            '</tr>' +
+          '</tfoot>' +
+        '</table>' +
+
+        '<div style="margin-top:40px; display:flex; justify-content:space-between; font-size:12px; color:#475569; padding-top:20px; border-top:1px dashed #cbd5e1;">' +
+          '<div style="text-align:center; width:200px;">' +
+            '<div style="border-bottom:1px solid #94a3b8; height:40px;"></div>' +
+            '<p style="margin:5px 0 0 0; font-weight:600;">Receiver\'s Signature &amp; Stamp</p>' +
+          '</div>' +
+          '<div style="text-align:center; width:200px;">' +
+            '<div style="border-bottom:1px solid #94a3b8; height:40px;"></div>' +
+            '<p style="margin:5px 0 0 0; font-weight:600;">For Reliance Infotech Pvt. Ltd.</p>' +
+          '</div>' +
+        '</div>';
+
+      var printArea = document.getElementById('deliverySlipPrintArea');
+      if (printArea) {
+        printArea.innerHTML = slipHtml;
+      }
+      this.openModal('deliverySlipModal');
+    },
+
     // Export & Backup
     exportJSON: function() {
       var jsonStr = JSON.stringify(currentData, null, 2);
@@ -787,13 +1289,19 @@
       }
       // 1. Sync full website CMS dataset (Hero, Services, Blog, Team, Testimonials, Logos, Settings)
       window.RelianceFirebase.saveCMSData(currentData).then(function() {
-        // 2. Sync inquiries collection
+        // 2. Sync corporate clients
+        var clients = currentData.clients || [];
+        Promise.all(clients.map(function(c) {
+          return window.RelianceFirebase.saveClient(c);
+        })).catch(function() {});
+
+        // 3. Sync inquiries collection
         var inqs = currentData.inquiries || [];
         var count = 0;
         Promise.all(inqs.map(function(inq) {
           return window.RelianceFirebase.saveInquiry(inq).then(function() { count++; });
         })).then(function() {
-          showToast('All CMS modules & ' + count + ' inquiries fully synchronized with Cloud Firestore!', 'success');
+          showToast('All CMS modules, ' + clients.length + ' clients & ' + count + ' inquiries fully synchronized with Cloud Firestore!', 'success');
         });
       }).catch(function() {
         showToast('Synced with Cloud Firestore.', 'success');
@@ -801,9 +1309,10 @@
     }
   };
 
-  // Real-time Cloud Listener for Inquiries & CMS Content
+  // Real-time Cloud Listener for Inquiries, Clients & CMS Content
   var fbUnsubscribe = null;
   var fbCmsUnsubscribe = null;
+  var fbClientsUnsubscribe = null;
   function initRealtimeCloudListener() {
     if (!window.RelianceFirebase) return;
     if (fbUnsubscribe) {
@@ -811,6 +1320,9 @@
     }
     if (fbCmsUnsubscribe) {
       try { fbCmsUnsubscribe(); } catch(e) {}
+    }
+    if (fbClientsUnsubscribe) {
+      try { fbClientsUnsubscribe(); } catch(e) {}
     }
     if (window.RelianceFirebase.isReady) {
       // 1. Real-time Inquiries Listener
@@ -829,13 +1341,27 @@
         });
       }
 
-      // 2. Real-time CMS Website Content Listener (Hero, Services, Blog, Team, Reviews, Logos, Settings)
+      // 2. Real-time Corporate Clients & Dispatches Listener
+      if (typeof window.RelianceFirebase.listenToClients === 'function') {
+        fbClientsUnsubscribe = window.RelianceFirebase.listenToClients(function(cloudClients) {
+          if (cloudClients && cloudClients.length > 0) {
+            currentData.clients = cloudClients;
+            saveData(true);
+            renderClientsTable();
+            renderDashboardStats();
+          }
+        });
+      }
+
+      // 3. Real-time CMS Website Content Listener (Hero, Services, Blog, Team, Reviews, Logos, Settings)
       if (typeof window.RelianceFirebase.listenToCMSData === 'function') {
         fbCmsUnsubscribe = window.RelianceFirebase.listenToCMSData(function(cloudCMS) {
           if (cloudCMS && cloudCMS.hero) {
             var inqs = currentData.inquiries;
+            var clts = currentData.clients;
             currentData = Object.assign({}, currentData, cloudCMS);
-            currentData.inquiries = inqs; // Keep inquiries intact
+            currentData.inquiries = inqs;
+            if (!currentData.clients || currentData.clients.length === 0) currentData.clients = clts;
             saveData(true);
             renderAll();
           }

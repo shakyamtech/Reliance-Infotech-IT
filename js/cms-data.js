@@ -302,6 +302,184 @@ window.RelianceCMS_DefaultData = {
     { id: "logo-5", name: "D-Link", image: "img/bg-img/dlink.png" },
     { id: "logo-6", name: "MikroTik", image: "img/bg-img/mikrotik.png" }
   ],
+  clients: [
+    {
+      id: "client-101",
+      name: "Deepak Basnet",
+      company: "Fintech Solutions Nepal Pvt. Ltd.",
+      email: "deepak@fintechsolutions.com.np",
+      phone: "+977 9841334455",
+      address: "Naya Baneshwor, Kathmandu",
+      projectTitle: "Engineering Lab Laptops & Server Infrastructure",
+      status: "completed",
+      createdDate: "2026-08-26",
+      notes: "Hardware delivered and deployed with 3-year commercial warranty certificates.",
+      items: [
+        {
+          itemId: "itm-101-1",
+          name: "Dell Latitude 5540 Core i7 13th Gen (16GB RAM / 512GB SSD / Win 11 Pro)",
+          category: "Commercial Laptops",
+          quantity: 15,
+          unitPrice: 145000,
+          warranty: "3 Years Commercial On-site Warranty",
+          dispatchDate: "2026-08-28",
+          status: "Delivered"
+        },
+        {
+          itemId: "itm-101-2",
+          name: "Dell PowerEdge R450 1U Rack Server (Xeon Silver 4310 / 32GB / 2x 1.2TB SAS)",
+          category: "Online UPS & Servers",
+          quantity: 1,
+          unitPrice: 480000,
+          warranty: "3 Years ProSupport",
+          dispatchDate: "2026-08-29",
+          status: "Delivered"
+        },
+        {
+          itemId: "itm-101-3",
+          name: "APC Smart-UPS 2200VA LCD 230V High-Density UPS",
+          category: "Online UPS & Servers",
+          quantity: 2,
+          unitPrice: 115000,
+          warranty: "2 Years Official Warranty",
+          dispatchDate: "2026-08-29",
+          status: "Delivered"
+        }
+      ]
+    },
+    {
+      id: "client-102",
+      name: "Rajan Acharya",
+      company: "Nepal Biz Corp Pvt. Ltd.",
+      email: "rajan.acharya@nepalbiz.com",
+      phone: "+977 9851123456",
+      address: "Shankhamul Road, New Baneshwor",
+      projectTitle: "Office Network Cabling & Wi-Fi 6 Deployment",
+      status: "in-progress",
+      createdDate: "2026-08-28",
+      notes: "Cabling complete, PoE Switch and Wi-Fi APs under configuration.",
+      items: [
+        {
+          itemId: "itm-102-1",
+          name: "D-Link Cat6 UTP 305M Pure Copper Cable Drum",
+          category: "Structured Cabling",
+          quantity: 4,
+          unitPrice: 16500,
+          warranty: "25-Year Performance Warranty",
+          dispatchDate: "2026-08-30",
+          status: "Delivered"
+        },
+        {
+          itemId: "itm-102-2",
+          name: "Cisco Catalyst 1000 Series 24-Port Gigabit PoE+ Managed Switch",
+          category: "Network Switches & APs",
+          quantity: 1,
+          unitPrice: 85000,
+          warranty: "Enhanced Limited Lifetime Warranty",
+          dispatchDate: "2026-08-31",
+          status: "Under Installation"
+        },
+        {
+          itemId: "itm-102-3",
+          name: "Ubiquiti UniFi 6 Pro (U6-Pro) Dual-Band Wi-Fi 6 Access Points",
+          category: "Network Switches & APs",
+          quantity: 4,
+          unitPrice: 26000,
+          warranty: "1 Year Official Warranty",
+          dispatchDate: "2026-08-31",
+          status: "Under Installation"
+        },
+        {
+          itemId: "itm-102-4",
+          name: "Toten 42U 600x1000 Heavy Duty Server Rack with PDU & Cable Trays",
+          category: "Structured Cabling",
+          quantity: 1,
+          unitPrice: 54000,
+          warranty: "5 Years Structural Warranty",
+          dispatchDate: "2026-08-30",
+          status: "Delivered"
+        }
+      ]
+    },
+    {
+      id: "client-103",
+      name: "Pooja Gurung",
+      company: "Kathmandu Grand Hotel & Suites",
+      email: "pooja.g@kathmanduhotel.com",
+      phone: "+977 9801987654",
+      address: "Thamel, Kathmandu",
+      projectTitle: "Corporate Annual Maintenance Contract (AMC) & Network",
+      status: "amc-active",
+      createdDate: "2026-08-27",
+      notes: "Annual AMC agreement active for 20 desktops, network gateway, and 2 heavy-duty printers.",
+      items: [
+        {
+          itemId: "itm-103-1",
+          name: "Corporate Comprehensive AMC Plan (20 Workstations + Network)",
+          category: "AMC Maintenance",
+          quantity: 1,
+          unitPrice: 180000,
+          warranty: "1-Year SLA with 2-Hour Response Time",
+          dispatchDate: "2026-08-28",
+          status: "Active"
+        },
+        {
+          itemId: "itm-103-2",
+          name: "HP LaserJet Pro MFP 4103fdw All-in-One Duplex Network Printer",
+          category: "Printers & Scanners",
+          quantity: 2,
+          unitPrice: 68000,
+          warranty: "1 Year Manufacturer Warranty",
+          dispatchDate: "2026-08-29",
+          status: "Delivered"
+        },
+        {
+          itemId: "itm-103-3",
+          name: "MikroTik CCR2004-16G-2S+ Cloud Core Gigabit Router",
+          category: "Network Switches & APs",
+          quantity: 1,
+          unitPrice: 72000,
+          warranty: "1 Year Replacement Warranty",
+          dispatchDate: "2026-08-29",
+          status: "Delivered"
+        }
+      ]
+    },
+    {
+      id: "client-104",
+      name: "Er. Ramesh Shrestha",
+      company: "CTEVT Technical Training Center",
+      email: "ramesh.s@ctevt.org.np",
+      phone: "+977 9851098765",
+      address: "Sanothimi, Bhaktapur",
+      projectTitle: "Computer Lab 30 Desktops & IP Surveillance Setup",
+      status: "completed",
+      createdDate: "2026-08-20",
+      notes: "Complete lab setup successfully commissioned and handed over.",
+      items: [
+        {
+          itemId: "itm-104-1",
+          name: "Lenovo ThinkCentre Neo 50s Gen 4 Core i5 (16GB RAM / 512GB SSD / 21.5\" FHD Monitor)",
+          category: "Commercial Laptops",
+          quantity: 30,
+          unitPrice: 78000,
+          warranty: "3 Years OEM Warranty",
+          dispatchDate: "2026-08-22",
+          status: "Delivered"
+        },
+        {
+          itemId: "itm-104-2",
+          name: "Hikvision 4MP IP Audio Dome Cameras (DS-2CD1143G0-I) + 16CH 4K NVR + 4TB Surveillance HDD",
+          category: "CCTV & Security Gear",
+          quantity: 16,
+          unitPrice: 9500,
+          warranty: "2 Years Replacement Warranty",
+          dispatchDate: "2026-08-23",
+          status: "Delivered"
+        }
+      ]
+    }
+  ],
   inquiries: [
     {
       id: "inq-101",

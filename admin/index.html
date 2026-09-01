@@ -37,6 +37,12 @@
                     <span>Dashboard Analytics</span>
                 </div>
 
+                <div class="adm-nav-item" data-tab="clients" onclick="AdminCMS.switchTab('clients')">
+                    <i class="fa fa-briefcase adm-nav-icon"></i>
+                    <span>Clients &amp; Dispatches</span>
+                    <span class="adm-badge-count" id="clientsBadge" style="background:#2563eb; color:#fff; display:none;">0</span>
+                </div>
+
                 <div class="adm-menu-label">Content Management</div>
 
                 <div class="adm-nav-item" data-tab="homepage" onclick="AdminCMS.switchTab('homepage')">
@@ -234,6 +240,105 @@
                                     <tbody id="recentInquiriesList"></tbody>
                                 </table>
                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ============================================================
+                     TAB: CLIENTS & HARDWARE DISPATCHES
+                     ============================================================ -->
+                <div class="adm-tab-panel" id="tab-clients">
+                    <!-- Client KPI Stats -->
+                    <div class="adm-stats-grid" style="margin-bottom: 24px;">
+                        <div class="adm-stat-card">
+                            <div class="adm-stat-icon" style="background: rgba(37, 99, 235, 0.15); color: #3b82f6;">
+                                <i class="fa fa-building-o"></i>
+                            </div>
+                            <div class="adm-stat-content">
+                                <span class="adm-stat-label">Corporate Clients</span>
+                                <h3 class="adm-stat-value" id="statClientCount">0 Accounts</h3>
+                                <span class="adm-stat-sub"><i class="fa fa-check-circle" style="color:#10b981;"></i> Active Accounts</span>
+                            </div>
+                        </div>
+
+                        <div class="adm-stat-card">
+                            <div class="adm-stat-icon" style="background: rgba(212, 160, 23, 0.15); color: #d4a017;">
+                                <i class="fa fa-cubes"></i>
+                            </div>
+                            <div class="adm-stat-content">
+                                <span class="adm-stat-label">Dispatched Hardware</span>
+                                <h3 class="adm-stat-value" id="statDispatchedUnits">0 Units</h3>
+                                <span class="adm-stat-sub"><i class="fa fa-truck" style="color:#d4a017;"></i> Across all deployments</span>
+                            </div>
+                        </div>
+
+                        <div class="adm-stat-card">
+                            <div class="adm-stat-icon" style="background: rgba(16, 185, 129, 0.15); color: #10b981;">
+                                <i class="fa fa-money"></i>
+                            </div>
+                            <div class="adm-stat-content">
+                                <span class="adm-stat-label">Total Dispatch Value</span>
+                                <h3 class="adm-stat-value" id="statTotalOrderValue">NPR 0</h3>
+                                <span class="adm-stat-sub"><i class="fa fa-line-chart" style="color:#10b981;"></i> Total hardware value</span>
+                            </div>
+                        </div>
+
+                        <div class="adm-stat-card">
+                            <div class="adm-stat-icon" style="background: rgba(239, 68, 68, 0.15); color: #ef4444;">
+                                <i class="fa fa-cogs"></i>
+                            </div>
+                            <div class="adm-stat-content">
+                                <span class="adm-stat-label">Active Deployments</span>
+                                <h3 class="adm-stat-value" id="statActiveDeployments">0 Ongoing</h3>
+                                <span class="adm-stat-sub"><i class="fa fa-wrench" style="color:#ef4444;"></i> In-progress installations</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Client Directory Card -->
+                    <div class="adm-section-card">
+                        <div class="adm-section-header" style="flex-wrap:wrap; gap:12px;">
+                            <div>
+                                <h4>💼 Corporate Clients &amp; Dispatched Hardware</h4>
+                                <p style="font-size:13px; color:#94a3b8; margin-top:4px;">Manage corporate accounts, hardware shipments, warranty records, and delivery receipts.</p>
+                            </div>
+                            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                                <button type="button" class="adm-btn-action" onclick="AdminCMS.openClientModal()"><i class="fa fa-plus"></i> Add New Client &amp; Order</button>
+                            </div>
+                        </div>
+
+                        <!-- Filter & Search Bar -->
+                        <div style="display:flex; gap:12px; margin-bottom:20px; flex-wrap:wrap;">
+                            <div style="flex:1; min-width:240px; position:relative;">
+                                <input type="text" id="clientSearchInput" class="adm-input" placeholder="🔍 Search by client name, company, or hardware item..." oninput="AdminCMS.filterClients()">
+                            </div>
+                            <div style="width:200px;">
+                                <select id="clientStatusFilter" class="adm-input" onchange="AdminCMS.filterClients()">
+                                    <option value="all">All Statuses</option>
+                                    <option value="completed">Completed / Delivered</option>
+                                    <option value="in-progress">Under Installation / In-Progress</option>
+                                    <option value="amc-active">AMC Active</option>
+                                    <option value="quotation-sent">Quotation Sent</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Clients Table -->
+                        <div class="adm-table-wrap">
+                            <table class="adm-table">
+                                <thead>
+                                    <tr>
+                                        <th>Client &amp; Company</th>
+                                        <th>Project Scope</th>
+                                        <th>Contact &amp; Address</th>
+                                        <th>Dispatched Hardware</th>
+                                        <th>Total Value (NPR)</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="clientsTableBody"></tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -848,6 +953,216 @@
                     <button type="submit" class="adm-btn-action">Save Logo</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- ===== CLIENT & DISPATCH MODALS ===== -->
+
+    <!-- 1. Client Modal (Add/Edit Account) -->
+    <div class="adm-modal-backdrop" id="clientModal">
+        <div class="adm-modal" style="max-width: 650px;">
+            <div class="adm-modal-header">
+                <h4 id="clientModalTitle">💼 Corporate Client &amp; Project</h4>
+                <button type="button" class="adm-modal-close" onclick="AdminCMS.closeModal('clientModal')">&times;</button>
+            </div>
+            <form id="clientForm" onsubmit="event.preventDefault(); AdminCMS.saveClientForm();">
+                <input type="hidden" id="clientEditId">
+                <div class="adm-grid-2">
+                    <div class="adm-form-group">
+                        <label>Contact Person / Client Name</label>
+                        <input type="text" id="clientName" class="adm-input" placeholder="e.g. Deepak Basnet" required>
+                    </div>
+                    <div class="adm-form-group">
+                        <label>Company / Organization Name</label>
+                        <input type="text" id="clientCompany" class="adm-input" placeholder="e.g. Fintech Solutions Nepal" required>
+                    </div>
+                </div>
+
+                <div class="adm-grid-2">
+                    <div class="adm-form-group">
+                        <label>Email Address</label>
+                        <input type="email" id="clientEmail" class="adm-input" placeholder="client@company.com">
+                    </div>
+                    <div class="adm-form-group">
+                        <label>Phone / WhatsApp</label>
+                        <input type="text" id="clientPhone" class="adm-input" placeholder="+977 9841..." required>
+                    </div>
+                </div>
+
+                <div class="adm-form-group">
+                    <label>Office Address / Location</label>
+                    <input type="text" id="clientAddress" class="adm-input" placeholder="e.g. Naya Baneshwor, Kathmandu">
+                </div>
+
+                <div class="adm-grid-2">
+                    <div class="adm-form-group">
+                        <label>Project Title / Scope</label>
+                        <input type="text" id="clientProjectTitle" class="adm-input" placeholder="e.g. Laptops &amp; Server Deployment" required>
+                    </div>
+                    <div class="adm-form-group">
+                        <label>Project Status</label>
+                        <select id="clientStatus" class="adm-input">
+                            <option value="completed">Completed / Delivered</option>
+                            <option value="in-progress">Under Installation / In-Progress</option>
+                            <option value="amc-active">AMC Active</option>
+                            <option value="quotation-sent">Quotation Sent</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="adm-form-group">
+                    <label>Project Notes / Requirements</label>
+                    <textarea id="clientNotes" class="adm-textarea" placeholder="Details of requirements, delivery timeline, or warranty specifics..."></textarea>
+                </div>
+
+                <div class="adm-modal-footer">
+                    <button type="button" class="adm-btn-secondary" onclick="AdminCMS.closeModal('clientModal')">Cancel</button>
+                    <button type="submit" class="adm-btn-action">Save Client Account</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 2. Client Dossier & Hardware Items Modal -->
+    <div class="adm-modal-backdrop" id="clientDossierModal">
+        <div class="adm-modal" style="max-width: 960px; width: 95%;">
+            <div class="adm-modal-header" style="flex-wrap:wrap; gap:10px;">
+                <div>
+                    <h4 id="dossierTitle" style="display:flex; align-items:center; gap:10px; font-size:18px;">
+                        <i class="fa fa-briefcase" style="color:#d4a017;"></i>
+                        <span id="dossierClientName">Client Dossier</span>
+                    </h4>
+                    <p id="dossierCompanySub" style="font-size:13px; color:#94a3b8; margin:2px 0 0 0;"></p>
+                </div>
+                <div style="display:flex; gap:8px; align-items:center;">
+                    <button type="button" class="adm-btn-secondary" style="padding:6px 12px; font-size:13px;" onclick="AdminCMS.printCurrentClientSlip()">
+                        <i class="fa fa-print"></i> Print Dispatch Note
+                    </button>
+                    <button type="button" class="adm-modal-close" onclick="AdminCMS.closeModal('clientDossierModal')">&times;</button>
+                </div>
+            </div>
+
+            <!-- Client Info Strip -->
+            <div id="dossierInfoStrip" style="background: rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:8px; padding:14px; margin-bottom:20px; display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:12px; font-size:13px;">
+                <!-- Dynamically populated -->
+            </div>
+
+            <!-- Dispatched Items Table -->
+            <div style="margin-bottom: 20px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                    <h5 style="font-size:15px; font-weight:700; color:#f8fafc; margin:0;">
+                        <i class="fa fa-cubes" style="color:#3b82f6;"></i> Dispatched Hardware &amp; Services List
+                    </h5>
+                    <div id="dossierTotalBadge" style="font-size:13px; font-weight:700; color:#d4a017;"></div>
+                </div>
+
+                <div class="adm-table-wrap">
+                    <table class="adm-table" style="font-size:13px;">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Hardware / Item Name</th>
+                                <th>Category</th>
+                                <th>Qty</th>
+                                <th>Unit Price</th>
+                                <th>Total (NPR)</th>
+                                <th>Warranty</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dossierItemsTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Add Item Form Card -->
+            <div style="background: rgba(212,160,23,0.06); border: 1px solid rgba(212,160,23,0.2); border-radius:8px; padding:18px;">
+                <h5 style="font-size:14px; font-weight:700; color:#d4a017; margin-bottom:14px; display:flex; align-items:center; gap:8px;">
+                    <i class="fa fa-plus-circle"></i> Add Dispatched Hardware / Service Item to this Client
+                </h5>
+                <form id="dossierAddItemForm" onsubmit="event.preventDefault(); AdminCMS.addDossierItem();">
+                    <div class="adm-grid-2">
+                        <div class="adm-form-group">
+                            <label style="font-size:12px;">Hardware / Product Name</label>
+                            <input type="text" id="newItemName" class="adm-input" placeholder="e.g. Dell Latitude 5540 Core i7 13th Gen" required>
+                        </div>
+                        <div class="adm-form-group">
+                            <label style="font-size:12px;">Category</label>
+                            <select id="newItemCategory" class="adm-input" required>
+                                <option value="Commercial Laptops">Commercial Laptops &amp; PCs</option>
+                                <option value="Network Switches & APs">Network Switches &amp; APs</option>
+                                <option value="Structured Cabling">Structured Cabling &amp; Racks</option>
+                                <option value="CCTV & Security Gear">CCTV &amp; Security Surveillance</option>
+                                <option value="Online UPS & Servers">Online UPS &amp; Rack Servers</option>
+                                <option value="AMC Maintenance">AMC Maintenance SLA</option>
+                                <option value="Printers & Scanners">Printers &amp; Peripherals</option>
+                                <option value="Other IT Hardware">Other IT Supplies</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="adm-grid-3">
+                        <div class="adm-form-group">
+                            <label style="font-size:12px;">Quantity (Units)</label>
+                            <input type="number" id="newItemQty" class="adm-input" min="1" value="1" required>
+                        </div>
+                        <div class="adm-form-group">
+                            <label style="font-size:12px;">Unit Price (NPR)</label>
+                            <input type="number" id="newItemPrice" class="adm-input" placeholder="0" min="0" required>
+                        </div>
+                        <div class="adm-form-group">
+                            <label style="font-size:12px;">Item Status</label>
+                            <select id="newItemStatus" class="adm-input">
+                                <option value="Delivered">Delivered</option>
+                                <option value="Under Installation">Under Installation</option>
+                                <option value="In-Transit">In-Transit</option>
+                                <option value="Active">Active SLA</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="adm-grid-2">
+                        <div class="adm-form-group">
+                            <label style="font-size:12px;">Warranty &amp; Support Term</label>
+                            <input type="text" id="newItemWarranty" class="adm-input" placeholder="e.g. 3 Years Commercial On-site Warranty">
+                        </div>
+                        <div class="adm-form-group">
+                            <label style="font-size:12px;">Dispatch / Delivery Date</label>
+                            <input type="date" id="newItemDate" class="adm-input">
+                        </div>
+                    </div>
+
+                    <div style="text-align:right; margin-top:8px;">
+                        <button type="submit" class="adm-btn-action" style="padding:8px 18px; font-size:13px;">
+                            <i class="fa fa-plus"></i> Add Item to Client Dossier
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="adm-modal-footer" style="margin-top:20px;">
+                <button type="button" class="adm-btn-secondary" onclick="AdminCMS.closeModal('clientDossierModal')">Close Dossier</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Delivery Slip Printable Modal -->
+    <div class="adm-modal-backdrop" id="deliverySlipModal">
+        <div class="adm-modal" style="max-width: 800px; width:95%; background:#ffffff; color:#0f172a; padding:35px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;" class="no-print">
+                <span style="font-size:13px; font-weight:700; color:#64748b;">OFFICIAL HARDWARE DISPATCH NOTE</span>
+                <div style="display:flex; gap:10px;">
+                    <button type="button" class="adm-btn-action" style="background:#2563eb;" onclick="window.print()">
+                        <i class="fa fa-print"></i> Print / Save PDF
+                    </button>
+                    <button type="button" class="adm-btn-secondary" style="color:#0f172a; border-color:#cbd5e1;" onclick="AdminCMS.closeModal('deliverySlipModal')">Close</button>
+                </div>
+            </div>
+
+            <div id="deliverySlipPrintArea">
+                <!-- Printable layout populated by JS -->
+            </div>
         </div>
     </div>
 

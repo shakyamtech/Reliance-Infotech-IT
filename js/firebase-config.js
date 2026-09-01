@@ -151,6 +151,66 @@
       });
     },
 
+    // Save/Update Corporate Client & Dispatches in Firestore
+    saveClient: function(clientData) {
+      var self = this;
+      return new Promise(function(resolve) {
+        if (!self.isReady || !self.db) {
+          resolve({ success: false, mode: 'local' });
+          return;
+        }
+        try {
+          var payload = Object.assign({}, clientData, {
+            updatedAt: firebase.firestore.FieldValue ? firebase.firestore.FieldValue.serverTimestamp() : new Date().toISOString()
+          });
+          var docRef = clientData.id ? self.db.collection('clients').doc(clientData.id) : self.db.collection('clients').doc();
+          docRef.set(payload, { merge: true })
+            .then(function() { resolve({ success: true, id: docRef.id }); })
+            .catch(function(e) { resolve({ success: false, mode: 'local_fallback', error: e }); });
+        } catch (e) {
+          resolve({ success: false, mode: 'local_fallback', error: e });
+        }
+      });
+    },
+
+    // Delete Corporate Client from Firestore
+    deleteClient: function(clientId) {
+      var self = this;
+      return new Promise(function(resolve) {
+        if (!self.isReady || !self.db || !clientId) {
+          resolve({ success: true, mode: 'local' });
+          return;
+        }
+        try {
+          self.db.collection('clients').doc(clientId).delete()
+            .then(function() { resolve({ success: true }); })
+            .catch(function() { resolve({ success: false }); });
+        } catch (e) {
+          resolve({ success: false });
+        }
+      });
+    },
+
+    // Listen to Realtime Clients in Admin
+    listenToClients: function(callback) {
+      if (!this.isReady || !this.db) return null;
+      try {
+        var unsubscribe = this.db.collection('clients')
+          .onSnapshot(function(snapshot) {
+            var items = [];
+            snapshot.forEach(function(doc) {
+              var data = doc.data();
+              data.id = doc.id;
+              items.push(data);
+            });
+            callback(items);
+          }, function(err) {});
+        return unsubscribe;
+      } catch (e) {
+        return null;
+      }
+    },
+
     // Save Entire Website CMS Dataset (Hero, Services, Insights, Team, Reviews, Logos, Settings)
     saveCMSData: function(data) {
       var self = this;

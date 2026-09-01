@@ -9,10 +9,57 @@ window.AdminCharts = {
   init: function() {
     var data = window.RelianceCMS ? window.RelianceCMS.getData() : window.RelianceCMS_DefaultData;
     var analytics = data.analytics || {};
+    var clients = data.clients || [];
+
+    // Dynamically calculate category breakdown from real client dispatches
+    var categoryTotals = {};
+    clients.forEach(function(c) {
+      (c.items || []).forEach(function(item) {
+        var cat = item.category || 'Other IT Supplies';
+        var qty = Number(item.quantity) || 1;
+        categoryTotals[cat] = (categoryTotals[cat] || 0) + qty;
+      });
+    });
+
+    var dynamicSalesByCategory = Object.keys(categoryTotals).map(function(cat) {
+      return { category: cat, units: categoryTotals[cat] };
+    });
+
+    // If no client items yet, fallback gracefully
+    if (dynamicSalesByCategory.length === 0) {
+      dynamicSalesByCategory = analytics.salesByCategory || [
+        { category: "Commercial Laptops", units: 580 },
+        { category: "Network Switches & APs", units: 420 },
+        { category: "CCTV & Security Gear", units: 310 },
+        { category: "Online UPS & Servers", units: 170 }
+      ];
+    }
+
+    // Dynamically calculate project distribution from client status/types
+    var projectTypeTotals = {};
+    clients.forEach(function(c) {
+      var pType = c.status === 'amc-active' ? 'AMC Maintenance' :
+                  c.status === 'in-progress' ? 'Under Installation' :
+                  c.status === 'completed' ? 'Delivered / Handed Over' : 'Quotation & Scope';
+      projectTypeTotals[pType] = (projectTypeTotals[pType] || 0) + 1;
+    });
+
+    var dynamicProjectDist = Object.keys(projectTypeTotals).map(function(type) {
+      return { type: type, count: projectTypeTotals[type] };
+    });
+
+    if (dynamicProjectDist.length === 0) {
+      dynamicProjectDist = analytics.projectDistribution || [
+        { type: "Structured Cabling", count: 14 },
+        { type: "AMC Maintenance", count: 12 },
+        { type: "CCTV Surveillance", count: 8 },
+        { type: "Server & Backup", count: 4 }
+      ];
+    }
 
     this.renderClientGrowth(analytics.monthlyClientGrowth || []);
-    this.renderSalesByCategory(analytics.salesByCategory || []);
-    this.renderProjectDistribution(analytics.projectDistribution || []);
+    this.renderSalesByCategory(dynamicSalesByCategory);
+    this.renderProjectDistribution(dynamicProjectDist);
   },
 
   renderClientGrowth: function(growthData) {
