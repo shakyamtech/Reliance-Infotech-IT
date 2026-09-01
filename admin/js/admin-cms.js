@@ -782,41 +782,65 @@
     },
     syncLocalToCloud: function() {
       if (!window.RelianceFirebase || !window.RelianceFirebase.isReady) {
-        showToast('Cloud database is operating in local mode. Inquiries are stored safely in browser storage.', 'info');
+        showToast('Cloud database is operating in local mode. All data is saved safely in browser storage.', 'info');
         return;
       }
-      var inqs = currentData.inquiries || [];
-      var count = 0;
-      Promise.all(inqs.map(function(inq) {
-        return window.RelianceFirebase.saveInquiry(inq).then(function() { count++; });
-      })).then(function() {
-        showToast('Successfully synchronized ' + count + ' inquiries to Cloud Firestore!', 'success');
+      // 1. Sync full website CMS dataset (Hero, Services, Blog, Team, Testimonials, Logos, Settings)
+      window.RelianceFirebase.saveCMSData(currentData).then(function() {
+        // 2. Sync inquiries collection
+        var inqs = currentData.inquiries || [];
+        var count = 0;
+        Promise.all(inqs.map(function(inq) {
+          return window.RelianceFirebase.saveInquiry(inq).then(function() { count++; });
+        })).then(function() {
+          showToast('All CMS modules & ' + count + ' inquiries fully synchronized with Cloud Firestore!', 'success');
+        });
       }).catch(function() {
         showToast('Synced with Cloud Firestore.', 'success');
       });
     }
   };
 
-  // Real-time Cloud Listener for Inquiries
+  // Real-time Cloud Listener for Inquiries & CMS Content
   var fbUnsubscribe = null;
+  var fbCmsUnsubscribe = null;
   function initRealtimeCloudListener() {
     if (!window.RelianceFirebase) return;
     if (fbUnsubscribe) {
       try { fbUnsubscribe(); } catch(e) {}
     }
-    if (window.RelianceFirebase.isReady && typeof window.RelianceFirebase.listenToInquiries === 'function') {
-      fbUnsubscribe = window.RelianceFirebase.listenToInquiries(function(cloudInquiries) {
-        if (cloudInquiries && cloudInquiries.length > 0) {
-          var prevCount = (currentData.inquiries || []).length;
-          currentData.inquiries = cloudInquiries;
-          saveData(true);
-          renderInquiriesTable();
-          renderDashboardStats();
-          if (cloudInquiries.length > prevCount && prevCount > 0) {
-            showToast('📬 New inquiry received from cloud in real time!', 'info');
+    if (fbCmsUnsubscribe) {
+      try { fbCmsUnsubscribe(); } catch(e) {}
+    }
+    if (window.RelianceFirebase.isReady) {
+      // 1. Real-time Inquiries Listener
+      if (typeof window.RelianceFirebase.listenToInquiries === 'function') {
+        fbUnsubscribe = window.RelianceFirebase.listenToInquiries(function(cloudInquiries) {
+          if (cloudInquiries && cloudInquiries.length > 0) {
+            var prevCount = (currentData.inquiries || []).length;
+            currentData.inquiries = cloudInquiries;
+            saveData(true);
+            renderInquiriesTable();
+            renderDashboardStats();
+            if (cloudInquiries.length > prevCount && prevCount > 0) {
+              showToast('📬 New inquiry received from cloud in real time!', 'info');
+            }
           }
-        }
-      });
+        });
+      }
+
+      // 2. Real-time CMS Website Content Listener (Hero, Services, Blog, Team, Reviews, Logos, Settings)
+      if (typeof window.RelianceFirebase.listenToCMSData === 'function') {
+        fbCmsUnsubscribe = window.RelianceFirebase.listenToCMSData(function(cloudCMS) {
+          if (cloudCMS && cloudCMS.hero) {
+            var inqs = currentData.inquiries;
+            currentData = Object.assign({}, currentData, cloudCMS);
+            currentData.inquiries = inqs; // Keep inquiries intact
+            saveData(true);
+            renderAll();
+          }
+        });
+      }
     }
   }
 

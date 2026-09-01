@@ -151,6 +151,69 @@
       });
     },
 
+    // Save Entire Website CMS Dataset (Hero, Services, Insights, Team, Reviews, Logos, Settings)
+    saveCMSData: function(data) {
+      var self = this;
+      return new Promise(function(resolve) {
+        if (!self.isReady || !self.db) {
+          resolve({ success: false, mode: 'local' });
+          return;
+        }
+        try {
+          // Exclude large transient inquiries from the static site content document
+          var payload = Object.assign({}, data);
+          delete payload.inquiries; // Stored separately in inquiries collection for optimal performance
+          payload.updatedAt = firebase.firestore.FieldValue ? firebase.firestore.FieldValue.serverTimestamp() : new Date().toISOString();
+
+          self.db.collection('cms_content').doc('site_data').set(payload, { merge: true })
+            .then(function() { resolve({ success: true }); })
+            .catch(function(e) { resolve({ success: false, error: e }); });
+        } catch (e) {
+          resolve({ success: false, error: e });
+        }
+      });
+    },
+
+    // Fetch Latest CMS Content from Cloud Firestore
+    fetchCMSData: function() {
+      var self = this;
+      return new Promise(function(resolve) {
+        if (!self.isReady || !self.db) {
+          resolve(null);
+          return;
+        }
+        try {
+          self.db.collection('cms_content').doc('site_data').get()
+            .then(function(doc) {
+              if (doc.exists) {
+                resolve(doc.data());
+              } else {
+                resolve(null);
+              }
+            })
+            .catch(function() { resolve(null); });
+        } catch (e) {
+          resolve(null);
+        }
+      });
+    },
+
+    // Real-time listener for CMS Website content updates across all devices
+    listenToCMSData: function(callback) {
+      if (!this.isReady || !this.db) return null;
+      try {
+        var unsubscribe = this.db.collection('cms_content').doc('site_data')
+          .onSnapshot(function(doc) {
+            if (doc.exists) {
+              callback(doc.data());
+            }
+          }, function() {});
+        return unsubscribe;
+      } catch (e) {
+        return null;
+      }
+    },
+
     // Listen for Realtime Inquiries in Admin
     listenToInquiries: function(callback) {
       if (!this.isReady || !this.db) return null;

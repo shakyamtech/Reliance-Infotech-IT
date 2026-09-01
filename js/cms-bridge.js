@@ -23,10 +23,15 @@
       return window.RelianceCMS_DefaultData || {};
     },
 
-    // Save updated dataset
+    // Save updated dataset (local + cloud)
     saveData: function(data) {
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        
+        // Asynchronously sync entire CMS state to Firebase Cloud Firestore
+        if (window.RelianceFirebase && typeof window.RelianceFirebase.saveCMSData === 'function') {
+          window.RelianceFirebase.saveCMSData(data).catch(function() {});
+        }
         return true;
       } catch (e) {
         console.error('Error saving RelianceCMS data:', e);
@@ -78,6 +83,47 @@
         return true;
       }
       return false;
+    },
+
+    // Hydrate public website pages with live CMS data
+    renderPublicContent: function(data) {
+      if (!data) data = this.getData();
+
+      // 1. Update Contact / Settings Info across header, footer & contact cards
+      if (data.settings) {
+        var s = data.settings;
+        // Phone numbers
+        if (s.phone1 || s.phone2) {
+          var phoneStr = [s.phone1, s.phone2].filter(Boolean).join(' / ');
+          document.querySelectorAll('.ve-phone-target, a[href^="tel:"]').forEach(function(el) {
+            if (s.phone1 && el.getAttribute('href')?.startsWith('tel:')) {
+              el.setAttribute('href', 'tel:' + s.phone1.replace(/[^0-9+]/g, ''));
+            }
+          });
+        }
+        // Official Email
+        if (s.email) {
+          document.querySelectorAll('.ve-email-target, a[href^="mailto:"]').forEach(function(el) {
+            if (!el.classList.contains('no-cms')) {
+              el.setAttribute('href', 'mailto:' + s.email);
+              if (el.textContent.includes('@')) el.textContent = s.email;
+            }
+          });
+        }
+      }
+
+      // 2. Update Hero Section on Homepage
+      if (data.hero && document.querySelector('.ve-hero-title, .hero-area')) {
+        var hero = data.hero;
+        var hTitle = document.querySelector('.ve-hero-title h1, .hero-content h2, .ve-hero-heading');
+        if (hTitle && hero.title) {
+          hTitle.innerHTML = hero.title;
+        }
+        var hSubtitle = document.querySelector('.ve-hero-sub, .hero-content p, .ve-hero-p');
+        if (hSubtitle && hero.subtitle) {
+          hSubtitle.textContent = hero.subtitle;
+        }
+      }
     }
   };
 
@@ -86,8 +132,22 @@
     window.RelianceCMS.saveData(window.RelianceCMS_DefaultData);
   }
 
-  // Hook into public contact forms
+  // Sync latest CMS data from Cloud Firestore on page load
+  if (window.RelianceFirebase && typeof window.RelianceFirebase.fetchCMSData === 'function') {
+    window.RelianceFirebase.fetchCMSData().then(function(cloudData) {
+      if (cloudData && cloudData.hero) {
+        var local = window.RelianceCMS.getData();
+        var merged = Object.assign({}, local, cloudData);
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(merged)); } catch(e) {}
+        window.RelianceCMS.renderPublicContent(merged);
+      }
+    }).catch(function() {});
+  }
+
+  // Hook into public contact forms & render dynamic content
   document.addEventListener('DOMContentLoaded', function() {
+    window.RelianceCMS.renderPublicContent();
+
     var contactForms = document.querySelectorAll('form.ve-contact-form, form#contactForm, .ve-contact-form-wrap form');
     contactForms.forEach(function(form) {
       form.addEventListener('submit', function(e) {
