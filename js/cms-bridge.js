@@ -155,13 +155,22 @@
         var nameEl = form.querySelector('[name="name"], #name, #contactName, input[placeholder*="Name" i], input[type="text"]');
         var emailEl = form.querySelector('[name="email"], #email, #contactEmail, input[type="email"], input[placeholder*="email" i]');
         var phoneEl = form.querySelector('[name="phone"], #phone, #contactPhone, input[type="tel"], [name="number"], [name="mobile"], [name="contact"], input[placeholder*="phone" i], input[placeholder*="mobile" i], input[placeholder*="number" i]');
-        var subjectEl = form.querySelector('[name="subject"], #subject, #contactSubject, select, input[name="topic"], input[placeholder*="Topic" i], input[placeholder*="Subject" i]');
+        var subjectEl = form.querySelector('[name="subject"], #contactSubject, #subject, select, input[name="topic"], input[placeholder*="Topic" i], input[placeholder*="Subject" i]');
         var messageEl = form.querySelector('[name="message"], #message, #contactMessage, textarea, input[name="comment"]');
 
         var name = (nameEl ? nameEl.value : '').trim();
         var email = (emailEl ? emailEl.value : '').trim();
         var phone = (phoneEl ? phoneEl.value : '').trim();
-        var subject = (subjectEl ? subjectEl.value : '').trim();
+        var subject = '';
+        if (subjectEl) {
+          if (subjectEl.tagName === 'SELECT' && subjectEl.selectedIndex >= 0) {
+            var selOpt = subjectEl.options[subjectEl.selectedIndex];
+            subject = (selOpt && selOpt.value) ? selOpt.value : (selOpt ? selOpt.textContent : '');
+          } else {
+            subject = subjectEl.value || '';
+          }
+        }
+        subject = subject.trim();
         var message = (messageEl ? messageEl.value : '').trim();
 
         window.RelianceCMS.submitInquiry({
