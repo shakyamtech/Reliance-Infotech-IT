@@ -1454,8 +1454,15 @@
           var cloudMap = {};
           (cloudInquiries || []).forEach(function(i) { cloudMap[i.id] = true; });
 
+          // Map current local inquiry states to preserve read/unread status
+          var localMap = {};
+          (currentData.inquiries || []).forEach(function(i) { localMap[i.id] = i; });
+
           var missingDefaults = defaultInquiries.filter(function(defI) {
             return !cloudMap[defI.id] && deletedInqs.indexOf(defI.id) === -1;
+          }).map(function(defI) {
+            // Keep local read status if user already marked it read
+            return localMap[defI.id] ? Object.assign({}, defI, localMap[defI.id]) : defI;
           });
 
           if (missingDefaults.length > 0) {
@@ -1464,7 +1471,10 @@
             });
           }
 
-          var mergedInqs = (cloudInquiries || []).concat(missingDefaults);
+          var mergedInqs = (cloudInquiries || []).map(function(ci) {
+            return localMap[ci.id] ? Object.assign({}, ci, localMap[ci.id]) : ci;
+          }).concat(missingDefaults);
+          
           mergedInqs.sort(function(a, b) {
             return (b.date || '').localeCompare(a.date || '');
           });
@@ -1488,8 +1498,13 @@
           var cloudMap = {};
           (cloudClients || []).forEach(function(c) { cloudMap[c.id] = true; });
 
+          var localClientMap = {};
+          (currentData.clients || []).forEach(function(c) { localClientMap[c.id] = c; });
+
           var missingDefaults = defaultClients.filter(function(defC) {
             return !cloudMap[defC.id] && deletedClients.indexOf(defC.id) === -1;
+          }).map(function(defC) {
+            return localClientMap[defC.id] ? Object.assign({}, defC, localClientMap[defC.id]) : defC;
           });
 
           // Auto-seed missing default clients to cloud so they never get lost
@@ -1499,7 +1514,10 @@
             });
           }
 
-          var mergedClients = (cloudClients || []).concat(missingDefaults);
+          var mergedClients = (cloudClients || []).map(function(cc) {
+            return localClientMap[cc.id] ? Object.assign({}, cc, localClientMap[cc.id]) : cc;
+          }).concat(missingDefaults);
+          
           currentData.clients = mergedClients;
           try { localStorage.setItem(STORAGE_KEY, JSON.stringify(currentData)); } catch(e) {}
           renderClientsTable();
