@@ -12,6 +12,23 @@
   var currentData = null;
   var convertingInquiryId = null;
 
+  function getDeletedIds(key) {
+    try {
+      return JSON.parse(localStorage.getItem(key) || '[]');
+    } catch(e) {
+      return [];
+    }
+  }
+
+  function addDeletedId(key, id) {
+    if (!id) return;
+    var list = getDeletedIds(key);
+    if (list.indexOf(id) === -1) {
+      list.push(id);
+      try { localStorage.setItem(key, JSON.stringify(list)); } catch(e) {}
+    }
+  }
+
   // Toast notifications
   function showToast(message, type) {
     type = type || 'success';
@@ -850,6 +867,7 @@
     },
     deleteInquiry: function(id) {
       if (confirm('Delete this inquiry?')) {
+        addDeletedId('RelianceCMS_DeletedInquiries', id);
         currentData.inquiries = (currentData.inquiries || []).filter(function(x) { return x.id !== id; });
         saveData();
         renderInquiriesTable();
@@ -958,7 +976,8 @@
 
       var wasConverting = convertingInquiryId;
       if (wasConverting) {
-        // Automatically remove converted inquiry from active inbox
+        // Automatically track and remove converted inquiry from active inbox
+        addDeletedId('RelianceCMS_DeletedInquiries', wasConverting);
         currentData.inquiries = (currentData.inquiries || []).filter(function(x) { return x.id !== wasConverting; });
         convertingInquiryId = null;
         if (window.RelianceFirebase && typeof window.RelianceFirebase.deleteInquiry === 'function') {
@@ -986,6 +1005,7 @@
 
     deleteClient: function(id) {
       if (confirm('Are you sure you want to delete this client account and all its hardware logs?')) {
+        addDeletedId('RelianceCMS_DeletedClients', id);
         currentData.clients = (currentData.clients || []).filter(function(x) { return x.id !== id; });
         saveData(true, false);
         renderClientsTable();
@@ -1354,15 +1374,33 @@
       // 1. Real-time Inquiries Listener
       if (typeof window.RelianceFirebase.listenToInquiries === 'function') {
         fbUnsubscribe = window.RelianceFirebase.listenToInquiries(function(cloudInquiries) {
-          if (cloudInquiries && cloudInquiries.length > 0) {
-            var prevCount = (currentData.inquiries || []).length;
-            currentData.inquiries = cloudInquiries;
-            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(currentData)); } catch(e) {}
-            renderInquiriesTable();
-            renderDashboardStats();
-            if (cloudInquiries.length > prevCount && prevCount > 0) {
-              showToast('📬 New inquiry received from cloud in real time!', 'info');
-            }
+          var defaultInquiries = (window.RelianceCMS_DefaultData && window.RelianceCMS_DefaultData.inquiries) || [];
+          var deletedInqs = getDeletedIds('RelianceCMS_DeletedInquiries');
+          var cloudMap = {};
+          (cloudInquiries || []).forEach(function(i) { cloudMap[i.id] = true; });
+
+          var missingDefaults = defaultInquiries.filter(function(defI) {
+            return !cloudMap[defI.id] && deletedInqs.indexOf(defI.id) === -1;
+          });
+
+          if (missingDefaults.length > 0) {
+            missingDefaults.forEach(function(defI) {
+              window.RelianceFirebase.saveInquiry(defI).catch(function() {});
+            });
+          }
+
+          var mergedInqs = (cloudInquiries || []).concat(missingDefaults);
+          mergedInqs.sort(function(a, b) {
+            return (b.date || '').localeCompare(a.date || '');
+          });
+
+          var prevCount = (currentData.inquiries || []).length;
+          currentData.inquiries = mergedInqs;
+          try { localStorage.setItem(STORAGE_KEY, JSON.stringify(currentData)); } catch(e) {}
+          renderInquiriesTable();
+          renderDashboardStats();
+          if (cloudInquiries && cloudInquiries.length > prevCount && prevCount > 0) {
+            showToast('📬 New inquiry received from cloud in real time!', 'info');
           }
         });
       }
@@ -1370,12 +1408,27 @@
       // 2. Real-time Corporate Clients & Dispatches Listener
       if (typeof window.RelianceFirebase.listenToClients === 'function') {
         fbClientsUnsubscribe = window.RelianceFirebase.listenToClients(function(cloudClients) {
-          if (cloudClients && cloudClients.length > 0) {
-            currentData.clients = cloudClients;
-            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(currentData)); } catch(e) {}
-            renderClientsTable();
-            renderDashboardStats();
+          var defaultClients = (window.RelianceCMS_DefaultData && window.RelianceCMS_DefaultData.clients) || [];
+          var deletedClients = getDeletedIds('RelianceCMS_DeletedClients');
+          var cloudMap = {};
+          (cloudClients || []).forEach(function(c) { cloudMap[c.id] = true; });
+
+          var missingDefaults = defaultClients.filter(function(defC) {
+            return !cloudMap[defC.id] && deletedClients.indexOf(defC.id) === -1;
+          });
+
+          // Auto-seed missing default clients to cloud so they never get lost
+          if (missingDefaults.length > 0) {
+            missingDefaults.forEach(function(defC) {
+              window.RelianceFirebase.saveClient(defC).catch(function() {});
+            });
           }
+
+          var mergedClients = (cloudClients || []).concat(missingDefaults);
+          currentData.clients = mergedClients;
+          try { localStorage.setItem(STORAGE_KEY, JSON.stringify(currentData)); } catch(e) {}
+          renderClientsTable();
+          renderDashboardStats();
         });
       }
 
