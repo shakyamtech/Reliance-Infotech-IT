@@ -906,12 +906,13 @@
       var inq = (currentData.inquiries || []).find(function(x) { return x.id === id; });
       if (inq) {
         inq.status = inq.status === 'unread' ? 'read' : 'unread';
-        saveData(true);
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(currentData)); } catch(e) {}
         renderInquiriesTable();
         renderDashboardStats();
+        showToast('Inquiry marked as ' + inq.status.toUpperCase(), 'info');
 
-        if (window.RelianceFirebase && typeof window.RelianceFirebase.updateInquiryStatus === 'function') {
-          window.RelianceFirebase.updateInquiryStatus(id, inq.status).catch(function() {});
+        if (window.RelianceFirebase && typeof window.RelianceFirebase.saveInquiry === 'function') {
+          window.RelianceFirebase.saveInquiry(inq).catch(function() {});
         }
       }
     },

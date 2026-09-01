@@ -131,7 +131,7 @@
       });
     },
 
-    // Update Inquiry status in Firestore
+    // Update Inquiry status in Firestore (set with merge so non-existing docs don't fail)
     updateInquiryStatus: function(inquiryId, status) {
       var self = this;
       return new Promise(function(resolve) {
@@ -140,9 +140,9 @@
           return;
         }
         try {
-          self.db.collection('inquiries').doc(inquiryId).update({
+          self.db.collection('inquiries').doc(inquiryId).set({
             status: status
-          })
+          }, { merge: true })
           .then(function() { resolve({ success: true }); })
           .catch(function() { resolve({ success: false }); });
         } catch (e) {
