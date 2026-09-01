@@ -152,11 +152,17 @@
     contactForms.forEach(function(form) {
       form.addEventListener('submit', function(e) {
         e.preventDefault();
-        var name = (form.querySelector('[name="name"], #name, input[type="text"]')?.value || '').trim();
-        var email = (form.querySelector('[name="email"], #email, input[type="email"]')?.value || '').trim();
-        var phone = (form.querySelector('[name="phone"], #phone, input[type="tel"], [name="number"]')?.value || '').trim();
-        var subject = (form.querySelector('[name="subject"], #subject, select')?.value || 'Website Inquiry').trim();
-        var message = (form.querySelector('[name="message"], #message, textarea')?.value || '').trim();
+        var nameEl = form.querySelector('[name="name"], #name, #contactName, input[placeholder*="Name" i], input[type="text"]');
+        var emailEl = form.querySelector('[name="email"], #email, #contactEmail, input[type="email"], input[placeholder*="email" i]');
+        var phoneEl = form.querySelector('[name="phone"], #phone, #contactPhone, input[type="tel"], [name="number"], [name="mobile"], [name="contact"], input[placeholder*="phone" i], input[placeholder*="mobile" i], input[placeholder*="number" i]');
+        var subjectEl = form.querySelector('[name="subject"], #subject, #contactSubject, select, input[name="topic"], input[placeholder*="Topic" i], input[placeholder*="Subject" i]');
+        var messageEl = form.querySelector('[name="message"], #message, #contactMessage, textarea, input[name="comment"]');
+
+        var name = (nameEl ? nameEl.value : '').trim();
+        var email = (emailEl ? emailEl.value : '').trim();
+        var phone = (phoneEl ? phoneEl.value : '').trim();
+        var subject = (subjectEl ? subjectEl.value : '').trim();
+        var message = (messageEl ? messageEl.value : '').trim();
 
         window.RelianceCMS.submitInquiry({
           name: name || 'Website Visitor',
